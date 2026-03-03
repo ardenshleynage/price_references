@@ -1,0 +1,52 @@
+<div class="table-data">
+    <div class="order">
+        <table>
+            <thead>
+                <tr>
+                    <th>Nom de la catégorie</th>
+                    <th>Créer le</th>
+                    <th>Modifier le</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                @forelse ($categories as $cat)
+                    <tr onclick="openUserModal({{ $cat->id }}, '{{ $cat->category_name }}', {{ $cat->status }}, '{{ $cat->created_at }}', '{{ $cat->updated_at }}')"
+                        style="cursor: pointer;">
+                        <td>
+                            <p>{{ $cat->category_name }}</p>
+                        </td>
+                        <td>{{ $cat->created_at }}</td>
+
+                        <td>{{ $cat->updated_at }}</td>
+                        <td>
+                            @switch($cat->status)
+                                @case(1)
+                                    <span class="status completed">Actif</span>
+                                @break
+
+                                @case(2)
+                                    <span class="status pending">Bloqué</span>
+                                @break
+
+                                @case(0)
+                                    <span class="status process">Supprimé</span>
+                                @break
+
+                                @default
+                                    Inconnu
+                            @endswitch
+                        </td>
+                    </tr>
+                    @empty
+                        <tr>
+                            <td colspan="4" style="text-align: center; padding: 20px;">
+                                <p style="color: #888; font-style: italic;">{{ $emptyMessage }}</p>
+                            </td>
+                        </tr>
+                    @endforelse
+                </tbody>
+            </table>
+        </div>
+    </div>
+    {{ $slot }}

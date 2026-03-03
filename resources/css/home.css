@@ -1,0 +1,128 @@
+body {
+    font-family: 'Inter', sans-serif;
+    background-color: #f8fafc;
+    /* Light gray background */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    padding: 1rem;
+}
+
+.card {
+    background-color: white;
+    border-radius: 1rem;
+    /* More rounded corners */
+    padding: 2rem;
+    box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+    width: 100%;
+    max-width: 400px;
+    /* Limit max width */
+    text-align: center;
+}
+
+.location-btn {
+    border: 2px solid transparent;
+    transition: all 0.3s ease;
+    background-color: #f1f5f9;
+    /* Lighter gray for buttons */
+    border-radius: 0.75rem;
+    /* Rounded buttons */
+    padding: 1.5rem 1rem;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    height: 150px;
+    /* Fixed height */
+}
+
+.location-btn.selected {
+    border-color: #6366f1;
+    /* Indigo border for selected */
+    background-color: #e0e7ff;
+    /* Lighter indigo background */
+}
+
+.location-btn svg {
+    width: 40px;
+    height: 40px;
+    margin-bottom: 0.5rem;
+    color: #4f46e5;
+    /* Indigo icon color */
+}
+
+.start-btn {
+    background-color: #6366f1;
+    /* Indigo */
+    color: white;
+    padding: 0.75rem 1.5rem;
+    border-radius: 9999px;
+    /* Pill shape */
+    font-weight: 600;
+    transition: background-color 0.3s ease;
+    width: 100%;
+    margin-top: 1.5rem;
+}
+
+.start-btn:disabled {
+    background-color: #a5b4fc;
+    /* Lighter indigo when disabled */
+    cursor: not-allowed;
+}
+
+.start-btn:not(:disabled):hover {
+    background-color: #4f46e5;
+    /* Darker indigo on hover */
+}
+
+.camera-logo {
+    width: 100px;
+    /* Adjust size as needed */
+    height: 100px;
+    margin: 0 auto 1.5rem auto;
+    /* Placeholder for a nice camera logo - using SVG */
+    background-color: #e0e7ff;
+    /* Light indigo background for placeholder */
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: #6366f1;
+    /* Indigo icon */
+}
+
+.camera-logo svg {
+    width: 50px;
+    height: 50px;
+}
+
+.hidden {
+    display: none;
+}
+
+.feedback {
+    margin-top: 1rem;
+    font-weight: 500;
+}
+
+.feedback.correct {
+    color: #16a34a;
+    /* Green */
+}
+
+.feedback.incorrect {
+    color: #dc2626;
+    /* Red */
+}
+
+.image-preview {
+    max-width: 100%;
+    max-height: 200px;
+    margin-top: 1rem;
+    border-radius: 0.5rem;
+    border: 1px solid #e5e7eb;
+    /* Gray border */
+}
