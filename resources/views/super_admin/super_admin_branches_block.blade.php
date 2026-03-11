@@ -4,7 +4,7 @@
 
 <body>
     <!-- SIDEBAR -->
-    <x-super-adim-sidebar />
+    <x-super_admin.super-adim-sidebar />
     <!-- SIDEBAR -->
 
     <!-- CONTENT -->
@@ -15,21 +15,21 @@
 
         <!-- MAIN -->
         <main>
-            <x-branches.head-title />
-            <x-branches.branches-tabs />
-            <x-branches.branches-table :branches="$branches" empty-message="Aucune branche bloquée enregistré" />
+            <x-super_admin.branches.head-title />
+            <x-super_admin.branches.branches-tabs />
+            <x-super_admin.branches.branches-table :branches="$branches" empty-message="Aucune branche bloquée enregistré" />
         </main>
-        <x-branches.branches-modal />
-        <x-branches.branches-edit-modal />
-        <x-branches.alert-messages-branches />
+        <x-super_admin.branches.branches-modal />
+        <x-super_admin.branches.branches-edit-modal />
+        <x-super_admin.branches.alert-messages-branches />
         <!-- MAIN -->
     </section>
     <!-- CONTENT -->
 
     <!-- Modal Overlay -->
-    <x-branches.modal-add-branches :super-admin-exists="$superAdminExists" />
+    <x-super_admin.branches.modal-add-branches :super-admin-exists="$superAdminExists" />
 
-    <x-branches.branches-footer />
+    <x-super_admin.branches.branches-footer />
 
 </body>
 

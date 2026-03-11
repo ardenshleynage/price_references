@@ -12,7 +12,7 @@ class UserComposer
         $userId = Session::get('user_id');
 
         if ($userId) {
-            $user = \App\Models\EndUser::find($userId);
+            $user = \App\Models\User::find($userId);
             $view->with('loggedUser', $user);
             $view->with('userRole', $user->role ?? null);
         } else {

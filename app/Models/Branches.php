@@ -24,4 +24,14 @@ class Branches extends Model
         'branche_name' => 'string',
         'status' => 'integer',
     ];
+
+    public function getCreatedAtFormattedAttribute(): string
+    {
+        return $this->created_at->format('d/m/Y H:i');
+    }
+
+    public function getUpdatedAtFormattedAttribute(): string
+    {
+        return $this->updated_at->format('d/m/Y H:i');
+    }
 }

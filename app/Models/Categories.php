@@ -12,7 +12,6 @@ use Illuminate\Database\Eloquent\Model;
  * @mixin IdeHelperCategories
  * @mixin \Illuminate\Database\Eloquent\Builder
  */
-
 class Categories extends Model
 {
     use HasFactory;
@@ -25,4 +24,14 @@ class Categories extends Model
         'category_name' => 'string',
         'status' => 'integer',
     ];
+
+    public function getCreatedAtFormattedAttribute(): string
+    {
+        return $this->created_at->format('d/m/Y H:i');
+    }
+
+    public function getUpdatedAtFormattedAttribute(): string
+    {
+        return $this->updated_at->format('d/m/Y H:i');
+    }
 }

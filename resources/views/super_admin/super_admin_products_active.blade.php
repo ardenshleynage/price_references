@@ -4,7 +4,7 @@
 
 <body>
     <!-- SIDEBAR -->
-    <x-super-adim-sidebar />
+    <x-super_admin.super-adim-sidebar />
     <!-- SIDEBAR -->
 
     <!-- CONTENT -->
@@ -15,21 +15,21 @@
 
         <!-- MAIN -->
         <main>
-            <x-products.head-title />
-            <x-products.products-tabs />
-            <x-products.products-table :products="$products" empty-message="Aucun produit actif enregistré" />
+            <x-super_admin.products.head-title />
+            <x-super_admin.products.products-tabs />
+            <x-super_admin.products.products-table :products="$products" empty-message="Aucun produit actif enregistré" />
         </main>
-        <x-products.products-modal />
-        <x-products.products-edit-modal :branches="$branches" :categories="$categories" />
-        <x-products.alert-messages-products />
+        <x-super_admin.products.products-modal />
+        <x-super_admin.products.products-edit-modal :branches="$branches" :categories="$categories" />
+        <x-super_admin.products.alert-messages-products />
         <!-- MAIN -->
     </section>
     <!-- CONTENT -->
 
     <!-- Modal Overlay -->
-    <x-products.modal-add-products :super-admin-exists="$superAdminExists" :branches="$branches" :categories="$categories" />
+    <x-super_admin.products.modal-add-products :super-admin-exists="$superAdminExists" :branches="$branches" :categories="$categories" />
 
-    <x-products.products-footer />
+    <x-super_admin.products.products-footer />
 
 </body>
 

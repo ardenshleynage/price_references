@@ -4,7 +4,7 @@
 
 <body>
     <!-- SIDEBAR -->
-    <x-super-adim-sidebar />
+    <x-super_admin.super-adim-sidebar />
     <!-- SIDEBAR -->
 
     <!-- CONTENT -->
@@ -24,7 +24,7 @@
                         </li>
                         <li><i class='bx bx-chevron-right'></i></li>
                         <li>
-                            <a class="active" href="{{ route('admins_home') }}">Home</a>
+                            <a class="active" href="{{ route('super_admin_home') }}">Home</a>
                         </li>
                     </ul>
                 </div>

@@ -4,7 +4,7 @@
 
 <body>
     <!-- SIDEBAR -->
-    <x-super-adim-sidebar />
+    <x-super_admin.super-adim-sidebar />
     <!-- SIDEBAR -->
 
     <!-- CONTENT -->
@@ -16,17 +16,17 @@
         <!-- MAIN -->
         <main>
             <!-- Head Title -->
-            <x-search.head-title :query="$query" />
+            <x-super_admin.search.head-title :query="$query" />
             <!-- Products Results -->
-            <x-search.products.products-results :results="$results" />
+            <x-super_admin.search.products.products-results :results="$results" />
             <!-- Users Results -->
-            <x-search.users.users-results :results="$results" />
+            <x-super_admin.search.users.users-results :results="$results" />
             <!-- Categories Results -->
-            <x-search.categories.categories-results :results="$results" />
+            <x-super_admin.search.categories.categories-results :results="$results" />
             <!-- Branches Results -->
-            <x-search.branches.branches-results :results="$results" />
+            <x-super_admin.search.branches.branches-results :results="$results" />
             <!-- No results -->
-            <x-search.no-results :query="$query" :results="$results" />
+            <x-super_admin.search.no-results :query="$query" :results="$results" />
 
         </main>
         <!-- MAIN -->
@@ -34,19 +34,19 @@
     <!-- CONTENT -->
 
     <!-- Product Modal -->
-    <x-search.products.products-modal />
+    <x-super_admin.search.products.products-modal />
     <!-- User Modal -->
-    <x-search.users.users-modal />
+    <x-super_admin.search.users.users-modal />
     <!-- Category Modal -->
-    <x-search.categories.categories-modal />
+    <x-super_admin.search.categories.categories-modal />
     <!-- Category Edit Modal -->
-    <x-search.categories.categories-edit-modal />
+    <x-super_admin.search.categories.categories-edit-modal />
     <!-- Branch Modal -->
-    <x-search.branches.branches-modal />
+    <x-super_admin.search.branches.branches-modal />
     <!-- Confirm Erase Modal -->
-    <x-search.confirm-erase-modal />
+    <x-super_admin.search.confirm-erase-modal />
     <!-- Footer -->
-    <x-search.search-footer />
+    <x-super_admin.search.search-footer />
 </body>
 
 </html>

@@ -13,8 +13,6 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @mixin IdeHelperProducts
  * @mixin \Illuminate\Database\Eloquent\Builder
  */
-
-
 class Products extends Model
 {
     use HasFactory;
@@ -44,16 +42,36 @@ class Products extends Model
     /**
      * @return BelongsTo<Branches,Products>
      */
-
     public function branch()
     {
         return $this->belongsTo(Branches::class, 'branch_id');
     }
+
     /**
      * @return BelongsTo<Categories,Products>
      */
     public function category()
     {
         return $this->belongsTo(Categories::class, 'category_id');
+    }
+
+    public function getCreatedAtFormattedAttribute(): string
+    {
+        return $this->created_at->format('d/m/Y H:i');
+    }
+
+    public function getUpdatedAtFormattedAttribute(): string
+    {
+        return $this->updated_at->format('d/m/Y H:i');
+    }
+
+    public function getBranchNameAttribute(): string
+    {
+        return $this->branch ? $this->branch->branche_name : 'Aucun';
+    }
+
+    public function getCategoryNameAttribute(): string
+    {
+        return $this->category ? $this->category->category_name : 'Aucun';
     }
 }

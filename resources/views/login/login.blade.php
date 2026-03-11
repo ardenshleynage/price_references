@@ -4,13 +4,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Connexion</title>
+    <title>Connexion - Price References</title>
+    <link rel="icon" type="image/png" href="{{ asset('images/bx--bxs-smile.png') }}">
     @vite(['resources/css/login.css'])
 
 </head>
 
 <body>
-    <a class="back_button" href="{{ url('/') }}">Retour</a>
+    <!-- <a class="back_button" href="{{ url('/') }}">Retour</a> -->
     <div class="login">
         <div class="login-triangle"></div>
 
@@ -20,7 +21,11 @@
             @csrf
             <p><input type="text" name="username" placeholder="Nom d'utilisateur"></p>
             <p><input type="password" name="password" placeholder="Mots de passe"></p>
-            <p> <a href="{{ route('forget_password') }}">Mots de passe oublier ?</a></p>
+            <p style="display: flex; align-items: center; gap: 8px;">
+                <input type="checkbox" name="remember" id="remember" style="width: auto; margin: 0;">
+                <label for="remember" style="margin: 0; font-size: 14px;">Se souvenir de moi</label>
+            </p>
+            <p> <a href="{{ route('forget_password') }}">Mots de passe oublié ?</a></p>
             <p><input type="submit" value="Connexion"></p>
         </form>
         <div class="error-messages">

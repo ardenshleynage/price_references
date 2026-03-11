@@ -4,6 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/png" href="{{ asset('images/bx--bxs-smile.png') }}">
 
     <!-- Boxicons -->
     <!-- <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'> -->
@@ -35,6 +36,6 @@
     <!-- My CSS -->
     @vite(['resources/css/styles.css', 'resources/scss/tabs.scss', 'resources/css/form.css'])
 
-    <title>AdminHub</title>
+    <title>Price References</title>
 </head>
 {{ $slot }}

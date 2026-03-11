@@ -16,7 +16,8 @@
 </head>
 
 <body>
-    <a class="back_button" href="{{ url()->previous() }}">Retour</a>
+    <a class="back_button" href="{{ $q ? url('/super_admin_search?q=' . $q) : url('/super_admin_search') }}">Retour</a>
+
     <div class="login">
         <div class="login-triangle"></div>
 
@@ -26,7 +27,8 @@
             @csrf
             <input type="hidden" name="category_id" value="{{ $category->id }}">
             <input type="hidden" name="q" value="{{ $q }}">
-            <p><input type="text" name="category_name" placeholder="Nom de la catégorie" value="{{ $category->category_name }}" required></p>
+            <p><input type="text" name="category_name" placeholder="Nom de la catégorie"
+                    value="{{ $category->category_name }}" required></p>
             <p><input type="submit" value="Enregistrer"></p>
         </form>
         <div class="error-messages">

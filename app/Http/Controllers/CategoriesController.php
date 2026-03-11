@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use App\Helpers\DateTimeHelper;
 use App\Models\Categories;
 /* use Carbon\Carbon; */
-use App\Models\EndUser;
+use App\Models\User;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -14,22 +14,23 @@ class CategoriesController extends Controller
 {
     use DateTimeHelper;
 
+    /*-----------------------
+     *-----------------------
+     *-----------------------
+     *-----------------------
+     * SUPER ADMIN
+     *-----------------------
+     *-----------------------
+     *-----------------------
+     *-----------------------*/
+
     public function superAdminCategories(): View
     {
         $dateTime = $this->getCurrentDateTime();
         $currentDate = $dateTime['date'];
         $currentTime = $dateTime['time'];
-        $superAdminExists = EndUser::where('role', 1)->exists();
-        // Récupérer toutes les catégories
-        $categories = Categories::orderBy('updated_at', 'desc')
-            ->get()
-            ->map(function ($category) {
-                // Formater les dates
-                $category->created_at_formatted = $category->created_at->format('d/m/Y H:i');
-                $category->updated_at_formatted = $category->updated_at->format('d/m/Y H:i');
-
-                return $category;
-            });
+        $superAdminExists = User::where('role', 1)->exists();
+        $categories = Categories::orderBy('updated_at', 'desc')->paginate(10);
 
         return view('super_admin.super_admin_categories', compact(
             'currentDate',
@@ -44,18 +45,11 @@ class CategoriesController extends Controller
         $dateTime = $this->getCurrentDateTime();
         $currentDate = $dateTime['date'];
         $currentTime = $dateTime['time'];
-        $superAdminExists = EndUser::where('role', 1)->exists();
+        $superAdminExists = User::where('role', 1)->exists();
 
-        // Récupérer UNIQUEMENT les catégories actives (status = 1)
         $categories = Categories::where('status', 1)
             ->orderBy('updated_at', 'desc')
-            ->get()
-            ->map(function ($category) {
-                $category->created_at_formatted = $category->created_at->format('d/m/Y H:i');
-                $category->updated_at_formatted = $category->updated_at->format('d/m/Y H:i');
-
-                return $category;
-            });
+            ->paginate(10);
 
         return view('super_admin.super_admin_categories_active', compact(
             'currentDate',
@@ -70,18 +64,11 @@ class CategoriesController extends Controller
         $dateTime = $this->getCurrentDateTime();
         $currentDate = $dateTime['date'];
         $currentTime = $dateTime['time'];
-        $superAdminExists = EndUser::where('role', 1)->exists();
+        $superAdminExists = User::where('role', 1)->exists();
 
-        // Récupérer UNIQUEMENT les catégories actives (status = 1)
         $categories = Categories::where('status', 2)
             ->orderBy('updated_at', 'desc')
-            ->get()
-            ->map(function ($category) {
-                $category->created_at_formatted = $category->created_at->format('d/m/Y H:i');
-                $category->updated_at_formatted = $category->updated_at->format('d/m/Y H:i');
-
-                return $category;
-            });
+            ->paginate(10);
 
         return view('super_admin.super_admin_categories_block', compact(
             'currentDate',
@@ -96,18 +83,11 @@ class CategoriesController extends Controller
         $dateTime = $this->getCurrentDateTime();
         $currentDate = $dateTime['date'];
         $currentTime = $dateTime['time'];
-        $superAdminExists = EndUser::where('role', 1)->exists();
+        $superAdminExists = User::where('role', 1)->exists();
 
-        // Récupérer UNIQUEMENT les catégories actives (status = 1)
         $categories = Categories::where('status', 0)
             ->orderBy('updated_at', 'desc')
-            ->get()
-            ->map(function ($category) {
-                $category->created_at_formatted = $category->created_at->format('d/m/Y H:i');
-                $category->updated_at_formatted = $category->updated_at->format('d/m/Y H:i');
-
-                return $category;
-            });
+            ->paginate(10);
 
         return view('super_admin.super_admin_categories_trash', compact(
             'currentDate',
@@ -128,7 +108,7 @@ class CategoriesController extends Controller
 
             return back()->with('success', 'Catégorie bloquée avec succès.');
         } catch (\Exception $e) {
-            return back()->with('error', 'Erreur lors du blocage : ' . $e->getMessage());
+            return back()->with('error', 'Erreur lors du blocage : '.$e->getMessage());
         }
     }
 
@@ -143,7 +123,7 @@ class CategoriesController extends Controller
 
             return back()->with('success', 'Catégorie débloquée avec succès.');
         } catch (\Exception $e) {
-            return back()->with('error', 'Erreur lors du déblocage : ' . $e->getMessage());
+            return back()->with('error', 'Erreur lors du déblocage : '.$e->getMessage());
         }
     }
 
@@ -158,7 +138,7 @@ class CategoriesController extends Controller
 
             return back()->with('success', 'Catégorie supprimée avec succès.');
         } catch (\Exception $e) {
-            return back()->with('error', 'Erreur lors de la suppression : ' . $e->getMessage());
+            return back()->with('error', 'Erreur lors de la suppression : '.$e->getMessage());
         }
     }
 
@@ -173,7 +153,7 @@ class CategoriesController extends Controller
 
             return back()->with('success', 'Catégorie restaurée avec succès.');
         } catch (\Exception $e) {
-            return back()->with('error', 'Erreur lors de la restauration  : ' . $e->getMessage());
+            return back()->with('error', 'Erreur lors de la restauration  : '.$e->getMessage());
         }
     }
 
@@ -186,7 +166,7 @@ class CategoriesController extends Controller
 
             return back()->with('success', 'Catégorie supprimée définitivement.');
         } catch (\Exception $e) {
-            return back()->with('error', 'Erreur lors de la suppression définitive  : ' . $e->getMessage());
+            return back()->with('error', 'Erreur lors de la suppression définitive  : '.$e->getMessage());
         }
     }
 
@@ -195,7 +175,7 @@ class CategoriesController extends Controller
         try {
             $request->validate(['categorie_id' => 'required|exists:categories,id']);
             $category = Categories::findOrFail($request->categorie_id);
-            $q = $request->q ? '?q=' . $request->q : '';
+            $q = $request->q ? '?q='.$request->q : '';
 
             switch ($action) {
                 case 'block':
@@ -218,7 +198,7 @@ class CategoriesController extends Controller
                     $category->forceDelete();
                     $message = 'Catégorie supprimée définitivement.';
 
-                    return redirect()->to('/super_admin_search' . $q)->with('success', $message);
+                    return redirect()->to('/super_admin_search'.$q)->with('success', $message);
                 default:
                     return back()->with('error', 'Action invalide.');
             }
@@ -226,9 +206,9 @@ class CategoriesController extends Controller
             $category->updated_at = now();
             $category->save();
 
-            return redirect()->to('/super_admin_search' . $q)->with('success', $message);
+            return redirect()->to('/super_admin_search'.$q)->with('success', $message);
         } catch (\Exception $e) {
-            return back()->with('error', 'Erreur : ' . $e->getMessage());
+            return back()->with('error', 'Erreur : '.$e->getMessage());
         }
     }
 
@@ -253,7 +233,7 @@ class CategoriesController extends Controller
             return redirect()->route('super_admin_categories')
                 ->with('success', 'Catégorie créé avec succès !');
         } catch (\Exception $e) {
-            return back()->withErrors(['error' => 'Erreur lors de la création : ' . $e->getMessage()])
+            return back()->withErrors(['error' => 'Erreur lors de la création : '.$e->getMessage()])
                 ->withInput();
         }
     }
@@ -265,7 +245,7 @@ class CategoriesController extends Controller
 
         // Validation - inclure l'ID dans la règle unique pour exclure l'enregistrement actuel
         $request->validate([
-            'category_name' => 'required|string|max:255|min:2|unique:categories,category_name,' . $id,
+            'category_name' => 'required|string|max:255|min:2|unique:categories,category_name,'.$id,
         ], [
             'category_name.required' => 'Le nom de la catégorie est obligatoire.',
             'category_name.string' => 'Le nom de la catégorie doit être une chaîne de caractères.',
@@ -285,14 +265,14 @@ class CategoriesController extends Controller
 
             // Si redirection depuis la recherche
             if ($request->has('q') && ! empty($request->q)) {
-                return redirect()->to('/super_admin_search?q=' . $request->q)
+                return redirect()->to('/super_admin_search?q='.$request->q)
                     ->with('success', 'Catégorie modifiée avec succès !');
             }
 
             return redirect()->route('super_admin_categories')
                 ->with('success', 'Catégorie modifiée avec succès !');
         } catch (\Exception $e) {
-            return back()->withErrors(['error' => 'Erreur lors de la modification : ' . $e->getMessage()])
+            return back()->withErrors(['error' => 'Erreur lors de la modification : '.$e->getMessage()])
                 ->withInput();
         }
     }
@@ -306,7 +286,7 @@ class CategoriesController extends Controller
             return view('super_admin.edit-category-search', compact('category', 'q'));
         } catch (\Exception $e) {
             return redirect()->route('super_admin_categories')
-                ->with('error', 'Catégorie introuvable.' . $e->getMessage());
+                ->with('error', 'Catégorie introuvable.'.$e->getMessage());
         }
     }
 
@@ -316,7 +296,7 @@ class CategoriesController extends Controller
         $q = $request->input('q', '');
 
         $request->validate([
-            'category_name' => 'required|string|max:255|min:2|unique:categories,category_name,' . $id,
+            'category_name' => 'required|string|max:255|min:2|unique:categories,category_name,'.$id,
         ], [
             'category_name.required' => 'Le nom de la catégorie est obligatoire.',
             'category_name.string' => 'Le nom de la catégorie doit être une chaîne de caractères.',
@@ -330,15 +310,299 @@ class CategoriesController extends Controller
             $category->update(['category_name' => $request->category_name]);
 
             if (! empty($q)) {
-                return redirect()->to('/super_admin_search?q=' . $q)
+                return redirect()->to('/super_admin_search?q='.$q)
                     ->with('success', 'Catégorie modifiée avec succès !');
             }
 
             return redirect()->route('super_admin_categories')
                 ->with('success', 'Catégorie modifiée avec succès !');
         } catch (\Exception $e) {
-            return back()->withErrors(['error' => 'Erreur lors de la modification : ' . $e->getMessage()])
+            return back()->withErrors(['error' => 'Erreur lors de la modification : '.$e->getMessage()])
                 ->withInput();
         }
+    }
+    /*-----------------------
+     *-----------------------
+     *-----------------------
+     *-----------------------
+     * ADMINS
+     *-----------------------
+     *-----------------------
+     *-----------------------
+     *-----------------------*/
+
+    public function adminsCategories(): View
+    {
+        $dateTime = $this->getCurrentDateTime();
+        $currentDate = $dateTime['date'];
+        $currentTime = $dateTime['time'];
+        $adminsExists = User::where('role', 2)->exists();
+
+        $categories = Categories::whereIn('status', [1, 2])
+            ->orderBy('updated_at', 'desc')
+            ->paginate(10);
+
+        return view('admins.admins_categories', compact(
+            'currentDate',
+            'currentTime',
+            'categories',
+            'adminsExists'
+        ));
+    }
+
+    public function adminsCategoriesActive(): View
+    {
+        $dateTime = $this->getCurrentDateTime();
+        $currentDate = $dateTime['date'];
+        $currentTime = $dateTime['time'];
+        $adminsExists = User::where('role', 2)->exists();
+
+        $categories = Categories::where('status', 1)
+            ->orderBy('updated_at', 'desc')
+            ->paginate(10);
+
+        return view('admins.admins_categories_active', compact(
+            'currentDate',
+            'currentTime',
+            'categories',
+            'adminsExists'
+        ));
+    }
+
+    public function adminsCategoriesDeleted(): View
+    {
+        $dateTime = $this->getCurrentDateTime();
+        $currentDate = $dateTime['date'];
+        $currentTime = $dateTime['time'];
+        $adminsExists = User::where('role', 2)->exists();
+
+        $categories = Categories::where('status', 2)
+            ->orderBy('updated_at', 'desc')
+            ->paginate(10);
+
+        return view('admins.admins_categories_trash', compact(
+            'currentDate',
+            'currentTime',
+            'categories',
+            'adminsExists'
+        ));
+    }
+
+    public function adminsDeleteCategory(Request $request): RedirectResponse
+    {
+        try {
+            $request->validate(['category_id' => 'required|exists:categories,id']);
+            $category = Categories::findOrFail($request->category_id);
+            $category->status = 2;
+            $category->updated_at = now();
+            $category->save();
+
+            return back()->with('success', 'Catégorie supprimée avec succès.');
+        } catch (\Exception $e) {
+            return back()->with('error', 'Erreur lors de la suppression : '.$e->getMessage());
+        }
+    }
+
+    public function adminsRestoreCategory(Request $request): RedirectResponse
+    {
+        try {
+            $request->validate(['category_id' => 'required|exists:categories,id']);
+            $category = Categories::findOrFail($request->category_id);
+            $category->status = 1;
+            $category->updated_at = now();
+            $category->save();
+
+            return back()->with('success', 'Catégorie restaurée avec succès.');
+        } catch (\Exception $e) {
+            return back()->with('error', 'Erreur lors de la restauration : '.$e->getMessage());
+        }
+    }
+
+    public function adminsFakePermanentDeleteCategory(Request $request): RedirectResponse
+    {
+        try {
+            $request->validate(['category_id' => 'required|exists:categories,id']);
+            $category = Categories::findOrFail($request->category_id);
+            $category->status = 0;  // Supprimé
+            $category->updated_at = now();
+            $category->save();
+
+            return back()->with('success', 'Catégorie supprimée définitivement.');
+        } catch (\Exception $e) {
+            return back()->with('error', 'Erreur lors de la suppression définitive : '.$e->getMessage());
+        }
+    }
+
+    public function adminshandleCategoryAction(Request $request, string $action): RedirectResponse
+    {
+        try {
+            $request->validate(['categorie_id' => 'required|exists:categories,id']);
+            $category = Categories::findOrFail($request->categorie_id);
+            $q = $request->q ? '?q='.$request->q : '';
+
+            switch ($action) {
+                case 'delete':
+                    $category->status = 2;
+                    $message = 'Catégorie supprimée avec succès.';
+                    break;
+                case 'restore':
+                    $category->status = 1;
+                    $message = 'Catégorie restaurée avec succès.';
+                    break;
+                case 'fake_erase':
+                    $category->status = 0;
+                    $message = 'Catégorie supprimée définitivement.';
+
+                    return redirect()->to('/admins_search'.$q)->with('success', $message);
+                default:
+                    return back()->with('error', 'Action invalide.');
+            }
+
+            $category->updated_at = now();
+            $category->save();
+
+            return redirect()->to('/admins_search'.$q)->with('success', $message);
+        } catch (\Exception $e) {
+            return back()->with('error', 'Erreur : '.$e->getMessage());
+        }
+    }
+
+    public function adminsCreateCategories(Request $request): RedirectResponse
+    {
+        $request->validate([
+            'category_name' => 'required|string|max:255|min:2|unique:categories,category_name',
+        ], [
+            'category_name.required' => 'Le nom de la catégorie est obligatoire.',
+            'category_name.string' => 'Le nom de la catégorie doit être une chaîne de caractères.',
+            'category_name.max' => 'Le nom de la catégorie doit contenir au maximum 255 caractères.',
+            'category_name.min' => 'Le nom de la catégorie doit contenir au moins 2 caractères.',
+            'category_name.unique' => 'Cette catégorie existe déjà.',
+        ]);
+        try {
+            // Création de l'utilisateur avec mot de passe hashé
+            Categories::create([
+                'category_name' => $request->category_name,
+                'status' => 1,
+            ]);
+
+            return redirect()->route('admins_categories')
+                ->with('success', 'Catégorie créé avec succès !');
+        } catch (\Exception $e) {
+            return back()->withErrors(['error' => 'Erreur lors de la création : '.$e->getMessage()])
+                ->withInput();
+        }
+    }
+
+    public function adminsUpdateCategories(Request $request): RedirectResponse
+    {
+        // Récupérer l'ID depuis le formulaire (champ caché)
+        $id = $request->input('category_id');
+
+        // Validation - inclure l'ID dans la règle unique pour exclure l'enregistrement actuel
+        $request->validate([
+            'category_name' => 'required|string|max:255|min:2|unique:categories,category_name,'.$id,
+        ], [
+            'category_name.required' => 'Le nom de la catégorie est obligatoire.',
+            'category_name.string' => 'Le nom de la catégorie doit être une chaîne de caractères.',
+            'category_name.max' => 'Le nom de la catégorie doit contenir au maximum 255 caractères.',
+            'category_name.min' => 'Le nom de la catégorie doit contenir au moins 2 caractères.',
+            'category_name.unique' => 'Cette catégorie existe déjà.',
+        ]);
+
+        try {
+            // Récupérer la branche avec l'ID du formulaire
+            $category = Categories::findOrFail($id);
+
+            // Mise à jour
+            $category->update([
+                'category_name' => $request->category_name,
+            ]);
+
+            // Si redirection depuis la recherche
+            if ($request->has('q') && ! empty($request->q)) {
+                return redirect()->to('/admins_search?q='.$request->q)
+                    ->with('success', 'Catégorie modifiée avec succès !');
+            }
+
+            return redirect()->route('admins_categories')
+                ->with('success', 'Catégorie modifiée avec succès !');
+        } catch (\Exception $e) {
+            return back()->withErrors(['error' => 'Erreur lors de la modification : '.$e->getMessage()])
+                ->withInput();
+        }
+    }
+
+    public function adminsEditFromSearch(Request $request, int $id): View|RedirectResponse
+    {
+        try {
+            $category = Categories::findOrFail($id);
+            $q = $request->get('q', '');
+
+            return view('admins.edit-category-search', compact('category', 'q'));
+        } catch (\Exception $e) {
+            return redirect()->route('admins_categories')
+                ->with('error', 'Catégorie introuvable.'.$e->getMessage());
+        }
+    }
+
+    public function adminsUpdateFromSearch(Request $request): RedirectResponse
+    {
+        $id = $request->input('category_id');
+        $q = $request->input('q', '');
+
+        $request->validate([
+            'category_name' => 'required|string|max:255|min:2|unique:categories,category_name,'.$id,
+        ], [
+            'category_name.required' => 'Le nom de la catégorie est obligatoire.',
+            'category_name.string' => 'Le nom de la catégorie doit être une chaîne de caractères.',
+            'category_name.max' => 'Le nom de la catégorie doit contenir au maximum 255 caractères.',
+            'category_name.min' => 'Le nom de la catégorie doit contenir au moins 2 caractères.',
+            'category_name.unique' => 'Cette catégorie existe déjà.',
+        ]);
+
+        try {
+            $category = Categories::findOrFail($id);
+            $category->update(['category_name' => $request->category_name]);
+
+            if (! empty($q)) {
+                return redirect()->to('/admins_search?q='.$q)
+                    ->with('success', 'Catégorie modifiée avec succès !');
+            }
+
+            return redirect()->route('admins_categories')
+                ->with('success', 'Catégorie modifiée avec succès !');
+        } catch (\Exception $e) {
+            return back()->withErrors(['error' => 'Erreur lors de la modification : '.$e->getMessage()])
+                ->withInput();
+        }
+    }
+
+    /*-----------------------
+     *-----------------------
+     *-----------------------
+     *-----------------------
+     *utilisateur/Reader
+     *-----------------------
+     *-----------------------
+     *-----------------------
+     *-----------------------*/
+
+    public function readersCategoriesActive(): View
+    {
+        $dateTime = $this->getCurrentDateTime();
+        $currentDate = $dateTime['date'];
+        $currentTime = $dateTime['time'];
+        $readersExists = User::where('role', 3)->exists();
+
+        $categories = Categories::where('status', 1)
+            ->orderBy('updated_at', 'desc')
+            ->paginate(10);
+
+        return view('readers.readers_categories_active', compact(
+            'currentDate',
+            'currentTime',
+            'categories',
+            'readersExists'
+        ));
     }
 }

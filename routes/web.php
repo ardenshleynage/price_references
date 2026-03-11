@@ -1,55 +1,69 @@
 <?php
 
 use App\Http\Controllers\AdminsController;
+use App\Http\Controllers\ReadersController;
 use App\Http\Controllers\Appcontroller;
 use App\Http\Controllers\BranchController;
 use App\Http\Controllers\CategoriesController;
 use App\Http\Controllers\ProductsController;
 use App\Http\Controllers\SuperAdminController;
+use App\Http\Controllers\UsersController;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Session;
 
 $mid = 'checkusers';
 
+/*-----------------------Home-----------------------*/
 Route::get('/', function () {
-    return view('index');
+    // Si l'utilisateur est connecté (session ou remember token), rediriger vers son dashboard
+    if (Session::has('user_id') || Auth::check()) {
+        $user = Auth::user();
+
+        if (! $user && Session::has('user_id')) {
+            $user = \App\Models\User::find(Session::get('user_id'));
+        }
+
+        if ($user) {
+            switch ($user->role) {
+                case 1: // Super Admin
+                    return redirect()->route('super_admin_home');
+                case 2: // Admin
+                    return redirect()->route('admins_home');
+                case 3: // Utilisateur
+                    return redirect()->route('readers_home');
+            }
+        }
+    }
+
+    // Pas connecté, afficher la page de connexion
+    return redirect()->route('login');
 })->name('home');
 
-Route::get('/admins_home', [AdminsController::class, 'AdminsHome'])->name('admins_home')->middleware($mid);
-Route::get('/admins_categories', [AdminsController::class, 'AdminsCategories'])->name('admins_categories')->middleware($mid);
 
-Route::get('/login', [Appcontroller::class, 'Login'])->name('login');
-Route::get('/forget_password', [Appcontroller::class, 'forgetPassword'])->name('forget_password');
-Route::get('/contact_it', [Appcontroller::class, 'contactIt'])->name('contact_it');
+/*-----------------------
+ *-----------------------
+ *-----------------------
+ *-----------------------
+ * Super Admins Dashboard
+ *-----------------------
+ *-----------------------
+ *-----------------------
+ -----------------------*/
+/*-----------------------Super Admins Home-----------------------*/
 Route::get('/super_admin_home', [SuperAdminController::class, 'superAdminHome'])
     ->name('super_admin_home')->middleware($mid);
-Route::post('/update-theme', [AdminsController::class, 'updateTheme'])
-    ->name('users.update_theme')->middleware($mid);
 
-// Route pour sauvegarder l'état du sidebar
-Route::post('/update-sidebar-state', [AdminsController::class, 'updateSidebarState'])
-    ->name('sidebar.update_state')->middleware($mid);
 
-/*
- * Profile Super Admin */
+/*-----------------------Super Admins profile-----------------------*/
 Route::get('/super_admin_profile', [SuperAdminController::class, 'superAdminProfile'])
     ->name('super_admin_profile')->middleware($mid);
-Route::post('/profile/update_username', [SuperAdminController::class, 'updateUsername'])
-    ->name('profile.update_username')->middleware($mid);
-Route::post('/profile/update_password', [SuperAdminController::class, 'updatePassword'])
-    ->name('profile.update_password')->middleware($mid);
-Route::post('/profile/update_theme', [SuperAdminController::class, 'updateThemeFromProfile'])
-    ->name('profile.update_theme')->middleware($mid);
 
-/*
- * Search Super Admin */
+/*-----------------------Super Admins Search-----------------------*/
 Route::get('/super_admin_search', [SuperAdminController::class, 'superAdminSearch'])
     ->name('super_admin_search')->middleware($mid);
 
-/*
- *
- *
- * Catégories Super Admin */
-
+/*-----------------------Super Admins Categories-----------------------*/
 Route::get('/super_admin_categories', [CategoriesController::class, 'superAdminCategories'])
     ->name('super_admin_categories')->middleware($mid);
 Route::get('/super_admin_categories_active', [CategoriesController::class, 'superAdminCategoriesActive'])
@@ -58,7 +72,6 @@ Route::get('/super_admin_categories_blocked', [CategoriesController::class, 'sup
     ->name('super_admin_categories_blocked')->middleware($mid);
 Route::get('/super_admin_categories_deleted', [CategoriesController::class, 'superAdminCategoriesDeleted'])
     ->name('super_admin_categories_deleted')->middleware($mid);
-
 Route::post('/create/categories', [CategoriesController::class, 'createCategories'])
     ->name('categories.create_category')->middleware($mid);
 Route::post('/categories/block', [CategoriesController::class, 'blockCategory'])
@@ -85,10 +98,7 @@ Route::post('/categories/update-from-search', [CategoriesController::class, 'upd
     ->name('categories.update_from_search')
     ->middleware($mid);
 
-/*
- *
- *
- * Branches Super Admin */
+/*-----------------------Super Admins Branches-----------------------*/
 Route::get('/super_admin_branches', [BranchController::class, 'superAdminBranches'])
     ->name('super_admin_branches')->middleware($mid);
 Route::get('/super_admin_branches_active', [BranchController::class, 'superAdminBranchesActive'])
@@ -97,7 +107,6 @@ Route::get('/super_admin_branches_blocked', [BranchController::class, 'superAdmi
     ->name('super_admin_branches_blocked')->middleware($mid);
 Route::get('/super_admin_branches_deleted', [BranchController::class, 'superAdminBranchesDeleted'])
     ->name('super_admin_branches_deleted')->middleware($mid);
-
 Route::post('/create/branches', [BranchController::class, 'createBranches'])
     ->name('branches.create_branche')->middleware($mid);
 Route::post('/branches/block', [BranchController::class, 'blockBranche'])
@@ -124,11 +133,7 @@ Route::post('/branches/update-from-search', [BranchController::class, 'updateFro
     ->name('branches.update_from_search')
     ->middleware($mid);
 
-/*
- *
- *
- * Utiliateurs Super Admin */
-
+/*-----------------------Super Admins Users-----------------------*/
 Route::get('/super_admin_users', [SuperAdminController::class, 'superAdminUsers'])
     ->name('super_admin_users')->middleware($mid);
 Route::get('/super_admin_users_active', [SuperAdminController::class, 'superAdminUsersActive'])
@@ -137,7 +142,6 @@ Route::get('/super_admin_users_blocked', [SuperAdminController::class, 'superAdm
     ->name('super_admin_users_blocked')->middleware($mid);
 Route::get('/super_admin_users_deleted', [SuperAdminController::class, 'superAdminUsersDeleted'])
     ->name('super_admin_users_deleted')->middleware($mid);
-
 Route::post('/create/users', [SuperAdminController::class, 'createUsersAdmins'])
     ->name('users.create_user')->middleware($mid);
 Route::post('/users/block', [SuperAdminController::class, 'blockUser'])
@@ -161,10 +165,7 @@ Route::get('/users/edit-from-search/{id}', [SuperAdminController::class, 'editUs
 Route::post('/users/update-from-search', [SuperAdminController::class, 'updateUserFromSearch'])
     ->name('users.update_from_search')->middleware($mid);
 
-/*
- *
- *
- * Produits Super Admin */
+/*-----------------------Super Admins Products-----------------------*/
 Route::get('/super_admin_products', [ProductsController::class, 'superAdminProducts'])
     ->name('super_admin_products')->middleware($mid);
 Route::get('/super_admin_products_active', [ProductsController::class, 'superAdminProductsActive'])
@@ -173,7 +174,6 @@ Route::get('/super_admin_products_blocked', [ProductsController::class, 'superAd
     ->name('super_admin_products_blocked')->middleware($mid);
 Route::get('/super_admin_products_deleted', [ProductsController::class, 'superAdminProductsDeleted'])
     ->name('super_admin_products_deleted')->middleware($mid);
-
 Route::post('/products/create', [ProductsController::class, 'createProduct'])
     ->name('products.create')
     ->middleware($mid);
@@ -194,11 +194,189 @@ Route::post('/products/{action}', [ProductsController::class, 'handleProductActi
 Route::post('/products/update', [ProductsController::class, 'updateProducts'])
     ->name('products.update')
     ->middleware($mid);
+Route::get('/products/edit-from-search/{id}', [ProductsController::class, 'editFromSearch'])
+    ->name('products.edit_from_search')
+    ->middleware($mid);
+Route::post('/products/update-from-search', [ProductsController::class, 'updateFromSearch'])
+    ->name('products.update_from_search')
+    ->middleware($mid);
 
-/*
- *
- *
- * Régénérer Super Admin */
+/*-----------------------
+ *-----------------------
+ *-----------------------
+ *-----------------------
+ * Users/App
+ *-----------------------
+ *-----------------------
+ *-----------------------
+ -----------------------*/
 
-Route::post('/login/users', [AdminsController::class, 'loginAdminsAndSuper'])->name('users.login_user');
-Route::post('/logout', [AdminsController::class, 'logout'])->name('logout');
+/*-----------------------Connexion/Déconexion-----------------------*/
+Route::get('/login', [Appcontroller::class, 'Login'])->name('login');
+Route::post('/login/users', [UsersController::class, 'loginUsers'])->name('users.login_user');
+Route::post('/logout', [UsersController::class, 'logout'])->name('logout');
+
+/*-----------------------Password Reset-----------------------*/
+Route::get('/forget_password', [Appcontroller::class, 'forgetPassword'])->name('forget_password');
+Route::post('/password/email', [Appcontroller::class, 'sendResetLinkEmail'])->name('password.email');
+Route::get('/password/reset/{token}', [Appcontroller::class, 'showResetForm'])->name('password.reset');
+Route::post('/password/reset', [Appcontroller::class, 'reset'])->name('password.update');
+Route::get('/contact_it', [Appcontroller::class, 'contactIt'])->name('contact_it');
+
+/*-----------------------Route pour sauvegarder l'état du sidebar-----------------------*/
+Route::post('/update-sidebar-state', [UsersController::class, 'updateSidebarState'])
+    ->name('sidebar.update_state')->middleware($mid);
+
+/*-----------------------Profile-----------------------*/
+Route::post('/profile/update_username', [UsersController::class, 'updateUsername'])
+    ->name('profile.update_username')->middleware($mid);
+Route::post('/profile/update_password', [UsersController::class, 'updatePassword'])
+    ->name('profile.update_password')->middleware($mid);
+Route::post('/profile/update_email', [UsersController::class, 'updateEmail'])
+    ->name('profile.update_email')->middleware($mid);
+Route::post('/profile/update_theme', [UsersController::class, 'updateThemeFromProfile'])
+    ->name('profile.update_theme')->middleware($mid);
+
+/*-----------------------
+ *-----------------------
+ *-----------------------
+ *-----------------------
+ *  Admins
+ *-----------------------
+ *-----------------------
+ *-----------------------
+ *-----------------------*/
+
+/*-----------------------Admins Home-----------------------*/
+Route::get('/admins_home', [AdminsController::class, 'adminsHome'])
+    ->name('admins_home')->middleware($mid);
+
+/*-----------------------Admins profile-----------------------*/
+Route::get('/admins_profile', [AdminsController::class, 'adminsProfile'])
+    ->name('admins_profile')->middleware($mid);
+
+/*-----------------------Admins Search-----------------------*/
+Route::get('/admins_search', [AdminsController::class, 'adminsSearch'])
+    ->name('admins_search')->middleware($mid);
+
+
+/*-----------------------Admins Categories-----------------------*/
+Route::get('/admins_categories', [CategoriesController::class, 'adminsCategories'])
+    ->name('admins_categories')->middleware($mid);
+Route::get('/admins_categories_active', [CategoriesController::class, 'adminsCategoriesActive'])
+    ->name('admins_categories_active')->middleware($mid);
+Route::get('/admins_categories_deleted', [CategoriesController::class, 'adminsCategoriesDeleted'])
+    ->name('admins_categories_deleted')->middleware($mid);
+Route::post('/admins/create/categories', [CategoriesController::class, 'adminsCreateCategories'])
+    ->name('admins.categories.create_category')->middleware($mid);
+Route::post('/admins/categories/delete', [CategoriesController::class, 'adminsDeleteCategory'])
+    ->name('admins.categories.delete')->middleware($mid);
+Route::post('/admins/categories/restore', [CategoriesController::class, 'adminsRestoreCategory'])
+    ->name('admins.categories.restore')->middleware($mid);
+Route::post('/admins/categories/erase', [CategoriesController::class, 'adminsFakePermanentDeleteCategory'])
+    ->name('admins.categories.erase')->middleware($mid);
+Route::post('/admins/categories/{action}', [CategoriesController::class, 'adminshandleCategoryAction'])
+    ->name('admins.categories.handleAction')
+    ->where('action', 'delete|restore|fake_erase')
+    ->middleware($mid);
+Route::post('/admins/categories/update', [CategoriesController::class, 'adminsUpdateCategories'])
+    ->name('admins.categories.update')
+    ->middleware($mid);
+Route::get('/admins/categories/edit-from-search/{id}', [CategoriesController::class, 'adminsEditFromSearch'])
+    ->name('admins.categories.edit_from_search')
+    ->middleware($mid);
+Route::post('/admins/categories/update-from-search', [CategoriesController::class, 'adminsUpdateFromSearch'])
+    ->name('admins.categories.update_from_search')
+    ->middleware($mid);
+
+/*-----------------------Admins Branches-----------------------*/
+Route::get('/admins_branches', [BranchController::class, 'adminsBranches'])
+    ->name('admins_branches')->middleware($mid);
+Route::get('/admins_branches_active', [BranchController::class, 'adminsBranchesActive'])
+    ->name('admins_branches_active')->middleware($mid);
+Route::get('/admins_branches_deleted', [BranchController::class, 'adminsBranchesDeleted'])
+    ->name('admins_branches_deleted')->middleware($mid);
+Route::post('/admins/create/branches', [BranchController::class, 'adminsCreateBranches'])
+    ->name('admins.branches.create_branch')->middleware($mid);
+Route::post('/admins/branches/delete', [BranchController::class, 'adminsDeleteBranche'])
+    ->name('admins.branches.delete')->middleware($mid);
+Route::post('/admins/branches/restore', [BranchController::class, 'adminsRestoreBranche'])
+    ->name('admins.branches.restore')->middleware($mid);
+Route::post('/admins/branches/erase', [BranchController::class, 'adminsFakePermanentDeleteBranche'])
+    ->name('admins.branches.erase')->middleware($mid);
+Route::post('/admins/branches/{action}', [BranchController::class, 'adminshandleBranchAction'])
+    ->name('admins.branches.handleAction')
+    ->where('action', 'delete|restore|fake_erase')
+    ->middleware($mid);
+Route::post('/admins/branches/update', [BranchController::class, 'adminsUpdateBranches'])
+    ->name('admins.branches.update')
+    ->middleware($mid);
+Route::get('/admins/branches/edit-from-search/{id}', [BranchController::class, 'adminsEditFromSearch'])
+    ->name('admins.branches.edit_from_search')
+    ->middleware($mid);
+Route::post('/admins/branches/update-from-search', [BranchController::class, 'adminsUpdateFromSearch'])
+    ->name('admins.branches.update_from_search')
+    ->middleware($mid);
+
+/*-----------------------Admins Products-----------------------*/
+Route::get('/admins_products', [ProductsController::class, 'adminsProducts'])
+    ->name('admins_products')->middleware($mid);
+Route::get('/admins_products_active', [ProductsController::class, 'adminsProductsActive'])
+    ->name('admins_products_active')->middleware($mid);
+Route::get('/admins_products_deleted', [ProductsController::class, 'adminsProductsDeleted'])
+    ->name('admins_products_deleted')->middleware($mid);
+Route::post('/admins/create/products', [ProductsController::class, 'adminsCreateProduct'])
+    ->name('admins.products.create_product')->middleware($mid);
+Route::post('/admins/products/delete', [ProductsController::class, 'adminsDeleteProducts'])
+    ->name('admins.products.delete')->middleware($mid);
+Route::post('/admins/products/restore', [ProductsController::class, 'adminsRestoreProducts'])
+    ->name('admins.products.restore')->middleware($mid);
+Route::post('/admins/products/erase', [ProductsController::class, 'adminsFakePermanentDeleteProducts'])
+    ->name('admins.products.erase')->middleware($mid);
+Route::post('/admins/products/{action}', [ProductsController::class, 'adminshandleProductAction'])
+    ->name('admins.products.handleAction')
+    ->where('action', 'delete|restore|fake_erase')
+    ->middleware($mid);
+Route::post('/admins/products/update', [ProductsController::class, 'adminsUpdateProducts'])
+    ->name('admins.products.update')
+    ->middleware($mid);
+Route::get('/admins/products/edit-from-search/{id}', [ProductsController::class, 'adminsEditFromSearch'])
+    ->name('admins.products.edit_from_search')
+    ->middleware($mid);
+Route::post('/admins/products/update-from-search', [ProductsController::class, 'adminsUpdateFromSearch'])
+    ->name('admins.products.update_from_search')
+    ->middleware($mid);
+
+/*-----------------------
+ *-----------------------
+ *-----------------------
+ *-----------------------
+ *Utilisateur/Reader
+ *-----------------------
+ *-----------------------
+ *-----------------------
+ -----------------------*/
+
+/*-----------------------Utilisateur Home-----------------------*/
+Route::get('/readers_home', [ReadersController::class, 'readersHome'])
+    ->name('readers_home')->middleware($mid);
+
+/*-----------------------Utilisateurprofile-----------------------*/
+Route::get('/readers_profile', [ReadersController::class, 'readersProfile'])
+    ->name('readers_profile')->middleware($mid);
+
+/*-----------------------Utilisateur Search-----------------------*/
+Route::get('/readers_search', [ReadersController::class, 'readersSearch'])
+    ->name('readers_search')->middleware($mid);
+
+/*-----------------------Utilisateur Products-----------------------*/
+Route::get('/readers_products_active', [ProductsController::class, 'readersProductsActive'])
+    ->name('readers_products_active')->middleware($mid);
+
+/*-----------------------Admins Branches-----------------------*/
+Route::get('/readers_branches_active', [BranchController::class, 'readersBranchesActive'])
+    ->name('readers_branches_active')->middleware($mid);
+
+/*-----------------------Admins Categories-----------------------*/
+Route::get('/readers_categories_active', [CategoriesController::class, 'readersCategoriesActive'])
+    ->name('readers_categories_active')->middleware($mid);

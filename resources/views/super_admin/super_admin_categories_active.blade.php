@@ -4,7 +4,7 @@
 
 <body>
     <!-- SIDEBAR -->
-    <x-super-adim-sidebar />
+    <x-super_admin.super-adim-sidebar />
     <!-- SIDEBAR -->
 
     <!-- CONTENT -->
@@ -15,21 +15,22 @@
 
         <!-- MAIN -->
         <main>
-            <x-categories.head-title />
-            <x-categories.categories-tabs />
-            <x-categories.categories-table :categories="$categories" empty-message="Aucune catégorie actif enregistré" />
+            <x-super_admin.categories.head-title />
+            <x-super_admin.categories.categories-tabs />
+            <x-super_admin.categories.categories-table :categories="$categories"
+                empty-message="Aucune catégorie actif enregistré" />
         </main>
-        <x-categories.categories-modal />
-        <x-categories.categories-edit-modal />
-        <x-categories.alert-messages-categories />
+        <x-super_admin.categories.categories-modal />
+        <x-super_admin.categories.categories-edit-modal />
+        <x-super_admin.categories.alert-messages-categories />
         <!-- MAIN -->
     </section>
     <!-- CONTENT -->
 
     <!-- Modal Overlay -->
-    <x-categories.modal-add-categories :super-admin-exists="$superAdminExists" />
+    <x-super_admin.categories.modal-add-categories :super-admin-exists="$superAdminExists" />
 
-    <x-categories.catgories-footer />
+    <x-super_admin.categories.catgories-footer />
 
 </body>
 

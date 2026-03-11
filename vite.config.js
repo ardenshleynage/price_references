@@ -16,9 +16,11 @@ export default defineConfig({
                 "resources/js/app.js",
                 "resources/js/bootstrap.js",
                 "resources/js/modal.js",
-                "resources/js/user-modal.blade.js",
-                "resources/js/search-modals.blade.js",
                 "resources/js/script.js",
+                "resources/js/admins/categories-modal.blade.js",
+                "resources/js/admins/branches-modal.blade.js",
+                "resources/js/admins/products-modal.blade.js",
+                "resources/js/admins/search-modals.blade.js",
 
                 "resources/scss/tabs.scss",
             ],

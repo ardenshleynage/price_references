@@ -3,24 +3,42 @@
 namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
+use App\Notifications\ResetPasswordNotification;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
+/**
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\User where($column, $operator = null, $value = null, $boolean = 'and')
+ * @method static \App\Models\User create(array $attributes)
+ *
+ * @mixin IdeHelperUser
+ * @mixin \Illuminate\Database\Eloquent\Builder
+ */
 class User extends Authenticatable
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
-    use HasFactory, Notifiable;
+    use HasFactory;
+
+    use Notifiable;
 
     /**
      * The attributes that are mass assignable.
      *
      * @var list<string>
      */
+    protected $table = 'users';
+
     protected $fillable = [
-        'name',
+
+        'username',
         'email',
         'password',
+        'role',
+        'last_time_connect',
+        'status',
+        'theme',
+
     ];
 
     /**
@@ -43,6 +61,32 @@ class User extends Authenticatable
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
+            'last_time_connect' => 'datetime',
+            'role' => 'integer',
+            'status' => 'integer',
+
         ];
+    }
+
+    public function sendPasswordResetNotification($token): void
+    {
+        $this->notify(new ResetPasswordNotification($token));
+    }
+
+    public function getCreatedAtFormattedAttribute(): string
+    {
+        return $this->created_at->format('d/m/Y H:i');
+    }
+
+    public function getUpdatedAtFormattedAttribute(): string
+    {
+        return $this->updated_at->format('d/m/Y H:i');
+    }
+
+    public function getLastTimeConnectFormattedAttribute(): string
+    {
+        return $this->last_time_connect
+            ? $this->last_time_connect->format('d/m/Y H:i')
+            : 'Jamais';
     }
 }

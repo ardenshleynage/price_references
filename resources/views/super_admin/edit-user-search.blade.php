@@ -26,7 +26,9 @@
             @csrf
             <input type="hidden" name="user_id" value="{{ $user->id }}">
             <input type="hidden" name="q" value="{{ $q }}">
-            <p><input type="text" name="username" placeholder="Nom d'utilisateur" value="{{ $user->username }}" required></p>
+            <p><input type="text" name="username" placeholder="Nom d'utilisateur" value="{{ $user->username }}"
+                    required></p>
+            <p><input type="email" name="email" placeholder="E-mail" value="{{ $user->email }}" required></p>
             <p>
                 <select name="role" required
                     style="box-sizing: border-box; display: block; width: 100%; border-width: 1px; border-style: solid; padding: 16px; outline: 0; font-family: inherit; font-size: 0.95em; background: #fff; border-color: #bbb; color: #555;">
@@ -56,6 +58,12 @@
                     {{ $errors->first('username') }}
                 </div>
             @endif
+            @if ($errors->has('email'))
+                <div class="alert-error-message">
+                    {{ $errors->first('email') }}
+                </div>
+            @endif
+
 
             @if ($errors->has('role'))
                 <div class="alert-error-message">

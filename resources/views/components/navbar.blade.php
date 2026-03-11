@@ -1,6 +1,8 @@
 <nav>
     <i class='bx bx-menu bx-sm'></i>
-    <form action="{{ route('super_admin_search') }}" method="GET">
+    <form
+        action="{{ $loggedUser->role == 1 ? route('super_admin_search') : ($loggedUser->role == 2 ? route('admins_search') : route('readers_search')) }}"
+        method="GET">
         <div class="form-input">
             <input type="search" name="q" placeholder="Recherche..." value="{{ request('q') }}">
             <button type="submit" class="search-btn"><i class='bx bx-search'></i></button>
@@ -11,7 +13,9 @@
     <!-- Profile Menu -->
     <div class="profile-menu" id="profileMenu">
         <ul>
-            <li><a href="{{ route('super_admin_profile') }}">Mon profil</a></li>
+            <li><a
+                    href="{{ $loggedUser->role == 1 ? route('super_admin_profile') : ($loggedUser->role == 2 ? route('admins_profile') : route('readers_profile')) }}">Mon
+                    profil</a></li>
             <li><a href="{{ route('logout') }}"
                     onclick="event.preventDefault(); document.getElementById('logout-form').submit();">Déconnexion</a>
             </li>
