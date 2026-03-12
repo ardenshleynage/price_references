@@ -1,3 +1,3 @@
-@vite(['resources/js/script.js', 'resources/js/admins/search-modals.blade.js'])
+@vite(['resources/js/script.js', 'resources/js/admins/search-modals.js'])
 @stack('scripts')
 {{ $slot }}

@@ -17,10 +17,22 @@ export default defineConfig({
                 "resources/js/bootstrap.js",
                 "resources/js/modal.js",
                 "resources/js/script.js",
-                "resources/js/admins/categories-modal.blade.js",
-                "resources/js/admins/branches-modal.blade.js",
-                "resources/js/admins/products-modal.blade.js",
-                "resources/js/admins/search-modals.blade.js",
+
+                "resources/js/readers/branches-modal.js",
+                "resources/js/readers/categories-modal.js",
+                "resources/js/readers/products-modal.js",
+                "resources/js/readers/search-modals.js",
+
+                "resources/js/super_admin/branches-modal.js",
+                "resources/js/super_admin/categories-modal.js",
+                "resources/js/super_admin/search-modals.js",
+                "resources/js/super_admin/user-modal.js",
+                "resources/js/super_admin/products-modal.js",
+
+                "resources/js/admins/categories-modal.js",
+                "resources/js/admins/branches-modal.js",
+                "resources/js/admins/products-modal.js",
+                "resources/js/admins/search-modals.js",
 
                 "resources/scss/tabs.scss",
             ],
