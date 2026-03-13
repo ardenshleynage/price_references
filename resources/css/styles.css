@@ -218,7 +218,7 @@ html.sidebar-collapsed #sidebar.hide {
     transition: 0.3s ease;
 }
 
-#sidebar.hide ~ #content {
+#sidebar.hide~#content {
     width: calc(100% - 60px);
     left: 60px;
 }
@@ -288,6 +288,7 @@ html.sidebar-collapsed #sidebar.hide {
     outline: none;
     width: 100%;
     color: var(--dark);
+    margin: 0;
 }
 
 #content nav form .form-input button {
@@ -302,7 +303,12 @@ html.sidebar-collapsed #sidebar.hide {
     border: none;
     outline: none;
     border-radius: 0 36px 36px 0;
+    margin: 0;
     cursor: pointer;
+}
+
+#content nav form .form-input button:hover {
+    background: var(--blue-dark);
 }
 
 #content nav .notification {
@@ -456,7 +462,7 @@ html.sidebar-collapsed #sidebar.hide {
     transition: all 0.3s ease;
 }
 
-#content nav #switch-mode:checked + .switch-mode::before {
+#content nav #switch-mode:checked+.switch-mode::before {
     left: calc(100% - (25px - 4px) - 2px);
 }
 
@@ -486,7 +492,7 @@ html.sidebar-collapsed #sidebar.hide {
     transition: transform 0.2s linear;
 }
 
-#content nav .checkbox:checked + .swith-lm .ball {
+#content nav .checkbox:checked+.swith-lm .ball {
     transform: translateX(22px);
 }
 
@@ -510,12 +516,41 @@ html.sidebar-collapsed #sidebar.hide {
     overflow-y: auto;
 }
 
+/* Head title - Add button */
 #content main .head-title {
     display: flex;
     align-items: center;
     justify-content: space-between;
     grid-gap: 16px;
     flex-wrap: wrap;
+}
+
+#content main .head-title .left {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+#content main .head-title .btn-download {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 40px;
+    padding: 0 20px;
+    border-radius: 40px;
+    background: var(--blue);
+    color: var(--light);
+    font-weight: 500;
+    text-decoration: none;
+    gap: 8px;
+    white-space: nowrap;
+    transition: all 0.2s ease;
+}
+
+#content main .head-title .btn-download:hover {
+    background: #2878c7;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(60, 145, 230, 0.3);
 }
 
 #content main .head-title .left h1 {
@@ -623,6 +658,7 @@ html.sidebar-collapsed #sidebar.hide {
     color: var(--dark);
 }
 
+/* TABLE STYLES */
 #content main .table-data {
     display: flex;
     flex-wrap: wrap;
@@ -632,62 +668,90 @@ html.sidebar-collapsed #sidebar.hide {
     color: var(--dark);
 }
 
-#content main .table-data > div {
-    border-radius: 20px;
+#content main .table-data>div {
+    border-radius: 16px;
     background: var(--light);
-    padding: 24px;
+    padding: 20px;
     overflow-x: auto;
+    width: 100%;
 }
 
 #content main .table-data .head {
     display: flex;
     align-items: center;
+    justify-content: space-between;
     grid-gap: 16px;
-    margin-bottom: 24px;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
 }
 
 #content main .table-data .head h3 {
-    margin-right: auto;
-    font-size: 24px;
+    font-size: 20px;
     font-weight: 600;
+    color: var(--dark);
 }
 
 #content main .table-data .head .bx {
     cursor: pointer;
+    font-size: 20px;
+    color: var(--dark-grey);
 }
 
 #content main .table-data .order {
     flex-grow: 1;
-    border: 2px solid #3c91e6;
-    flex-basis: 500px;
+    border: 2px solid var(--blue);
+    border-radius: 12px;
+    min-width: 100%;
+    width: 100%;
 }
 
 #content main .table-data .pagination-wrapper {
     flex-basis: 100%;
     width: 100%;
+    margin-top: 20px;
 }
 
 #content main .table-data .order table {
     width: 100%;
     border-collapse: collapse;
+    min-width: 600px;
+}
+
+#content main .table-data .order table thead {
+    background: var(--light-blue);
 }
 
 #content main .table-data .order table th {
-    padding-bottom: 12px;
+    padding: 14px 16px;
     font-size: 13px;
+    font-weight: 600;
     text-align: left;
+    color: var(--dark);
+    border-bottom: 2px solid var(--blue);
+    white-space: nowrap;
+}
+
+#content main .table-data .order table tbody tr {
     border-bottom: 1px solid var(--grey);
+    transition: background 0.2s ease;
+}
+
+#content main .table-data .order table tbody tr:last-child {
+    border-bottom: none;
 }
 
 #content main .table-data .order table td {
-    padding: 16px 0;
+    padding: 14px 16px;
+    font-size: 14px;
+    color: var(--dark);
+    vertical-align: middle;
 }
 
 #content main .table-data .order table tr td:first-child {
     display: flex;
     align-items: center;
     grid-gap: 12px;
-    padding-left: 6px;
+    padding-left: 16px;
 }
 
 #content main .table-data .order table td img {
@@ -698,32 +762,184 @@ html.sidebar-collapsed #sidebar.hide {
 }
 
 #content main .table-data .order table tbody tr:hover {
-    background: var(--grey);
+    background: var(--light-blue);
+    cursor: pointer;
+}
+
+#content main .table-data .order table tr td .status {
+    display: inline-block;
+    font-size: 11px;
+    padding: 6px 14px;
+    color: #fff;
+    border-radius: 20px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+#content main .table-data .order table tr td .status.completed,
+#content main .table-data .order table tr td .status.active {
+    background: var(--blue);
+}
+
+#content main .table-data .order table tr td .status.process,
+#content main .table-data .order table tr td .status.trash {
+    background: var(--yellow);
+    color: #333;
+}
+
+#content main .table-data .order table tr td .status.pending,
+#content main .table-data .order table tr td .status.blocked {
+    background: var(--orange);
+}
+
+#content main .table-data .order table tr td .status.deleted {
+    background: var(--red);
+}
+
+/* Table - Empty State */
+#content main .table-data .order table tbody tr td.empty-state {
+    text-align: center;
+    padding: 40px 20px;
+    color: var(--dark-grey);
+    font-style: italic;
+}
+
+/* Table Responsive */
+@media (max-width: 768px) {
+    #content main .table-data {
+        grid-gap: 16px;
+        margin-top: 16px;
+    }
+
+    #content main .table-data>div {
+        padding: 16px;
+        border-radius: 12px;
+    }
+
+    #content main .table-data .order {
+        border-radius: 10px;
+    }
+
+    #content main .table-data .order table {
+        min-width: 500px;
+    }
+
+    #content main .table-data .order table th,
+    #content main .table-data .order table td {
+        padding: 10px 12px;
+        font-size: 13px;
+    }
+}
+
+@media (max-width: 576px) {
+
+    #content nav .notification-menu,
+    #content nav .profile-menu {
+        width: 150px;
+    }
+
+    #content nav {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+    }
+
+    #content nav form {
+        flex: 1;
+        max-width: 200px;
+        margin: 0 10px;
+    }
+
+    #content nav form .form-input {
+        display: flex;
+        width: 100%;
+    }
+
+    #content nav form .form-input input {
+        flex: 1;
+        width: 100%;
+        padding: 8px 12px;
+        border: 1px solid #ccc;
+        border-radius: 20px 0 0 20px;
+        font-size: 14px;
+        margin: 0;
+        height: 36px;
+    }
+
+    #content nav form .form-input button {
+        width: 40px;
+        height: 36px;
+        padding: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: var(--blue);
+        border-radius: 0 20px 20px 0;
+        color: var(--light);
+        font-size: 14px;
+        margin: 0;
+    }
+
+    #content nav form.show~.notification,
+    #content nav form.show~.profile {
+        display: none;
+    }
+
+    #content main .box-info {
+        grid-template-columns: 1fr;
+    }
+
+    /* Table responsive */
+    #content main .table-data .order {
+        overflow-x: auto;
+    }
+
+    #content main .table-data .order table {
+        min-width: 450px;
+    }
+}
+
+/* Table Styles */
+#content main .table-data>div {
+    padding: 12px;
+    border-radius: 10px;
+}
+
+#content main .table-data .head {
+    margin-bottom: 12px;
+}
+
+#content main .table-data .head h3 {
+    font-size: 18px;
+}
+
+#content main .table-data .order {
+    border-radius: 8px;
+    border-width: 1px;
+}
+
+#content main .table-data .order table {
+    min-width: 450px;
+}
+
+#content main .table-data .order table th,
+#content main .table-data .order table td {
+    padding: 8px 10px;
+    font-size: 12px;
 }
 
 #content main .table-data .order table tr td .status {
     font-size: 10px;
-    padding: 6px 16px;
-    color: var(--light);
-    border-radius: 20px;
-    font-weight: 700;
+    padding: 4px 10px;
 }
 
-#content main .table-data .order table tr td .status.completed {
-    background: var(--blue);
-}
-
-#content main .table-data .order table tr td .status.process {
-    background: var(--yellow);
-}
-
-#content main .table-data .order table tr td .status.pending {
-    background: var(--orange);
-}
-
+/* Todo List Styles */
 #content main .table-data .todo {
     flex-grow: 1;
     flex-basis: 300px;
+    border: 2px solid var(--blue);
+    border-radius: 12px;
 }
 
 #content main .table-data .todo .todo-list {
@@ -732,29 +948,82 @@ html.sidebar-collapsed #sidebar.hide {
 
 #content main .table-data .todo .todo-list li {
     width: 100%;
-    margin-bottom: 16px;
+    margin-bottom: 12px;
     background: var(--grey);
-    border-radius: 10px;
-    padding: 14px 20px;
+    border-radius: 8px;
+    padding: 12px 16px;
     display: flex;
     justify-content: space-between;
     align-items: center;
-}
-
-#content main .table-data .todo .todo-list li .bx {
-    cursor: pointer;
-}
-
-#content main .table-data .todo .todo-list li.completed {
-    border-left: 10px solid var(--blue);
-}
-
-#content main .table-data .todo .todo-list li.not-completed {
-    border-left: 10px solid var(--orange);
+    transition: all 0.2s ease;
 }
 
 #content main .table-data .todo .todo-list li:last-child {
     margin-bottom: 0;
+}
+
+#content main .table-data .todo .todo-list li:hover {
+    background: var(--light-blue);
+    transform: translateX(4px);
+}
+
+#content main .table-data .todo .todo-list li .bx {
+    cursor: pointer;
+    font-size: 18px;
+}
+
+#content main .table-data .todo .todo-list li.completed {
+    border-left: 4px solid var(--blue);
+}
+
+#content main .table-data .todo .todo-list li.not-completed {
+    border-left: 4px solid var(--orange);
+}
+
+/* Dark mode for tables */
+html.dark #content main .table-data>div {
+    background: #1a1a2e;
+}
+
+html.dark #content main .table-data .head h3 {
+    color: #fff;
+}
+
+html.dark #content main .table-data .head .bx {
+    color: #aaa;
+}
+
+html.dark #content main .table-data .order {
+    border-color: #333;
+}
+
+html.dark #content main .table-data .order table thead {
+    background: #2a2a3e;
+}
+
+html.dark #content main .table-data .order table th {
+    color: #fff;
+    border-color: #444;
+}
+
+html.dark #content main .table-data .order table tbody tr {
+    border-color: #333;
+}
+
+html.dark #content main .table-data .order table tbody tr:hover {
+    background: #2a2a3e;
+}
+
+html.dark #content main .table-data .order table td {
+    color: #ddd;
+}
+
+html.dark #content main .table-data .todo .todo-list li {
+    background: #2a2a3e;
+}
+
+html.dark #content main .table-data .todo .todo-list li:hover {
+    background: #3a3a4e;
 }
 
 /* MAIN */
@@ -802,6 +1071,7 @@ html.sidebar-collapsed #sidebar.hide {
 
 /* Media Query for Smaller Screens */
 @media screen and (max-width: 768px) {
+
     /* Reduce width of notification and profile menu */
     #content nav .notification-menu,
     #content nav .profile-menu {
@@ -833,55 +1103,61 @@ html.sidebar-collapsed #sidebar.hide {
 }
 
 @media screen and (max-width: 576px) {
+
     #content nav .notification-menu,
     #content nav .profile-menu {
         width: 150px;
     }
 
-    #content nav form .form-input input {
-        display: none;
+    #content nav {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
     }
 
-    #content nav form .form-input button {
-        width: auto;
-        height: auto;
-        background: transparent;
-        border-radius: none;
-        color: var(--dark);
+    #content nav form {
+        flex: 1;
+        max-width: 200px;
+        margin: 0 10px;
     }
 
-    #content nav form.show .form-input input {
-        display: block;
+    #content nav form .form-input {
+        display: flex;
         width: 100%;
     }
 
-    #content nav form.show .form-input button {
-        width: 36px;
-        height: 100%;
-        border-radius: 0 36px 36px 0;
-        color: var(--light);
-        background: var(--red);
+    #content nav form .form-input input {
+        flex: 1;
+        width: 100%;
+        padding: 8px 12px;
+        border: 1px solid #ccc;
+        border-radius: 20px 0 0 20px;
+        font-size: 14px;
+        margin: 0;
+        height: 36px;
     }
 
-    #content nav form.show ~ .notification,
-    #content nav form.show ~ .profile {
+    #content nav form .form-input button {
+        width: 40px;
+        height: 36px;
+        padding: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: var(--blue);
+        border-radius: 0 20px 20px 0;
+        color: var(--light);
+        font-size: 14px;
+        margin: 0;
+    }
+
+    #content nav form.show~.notification,
+    #content nav form.show~.profile {
         display: none;
     }
 
     #content main .box-info {
         grid-template-columns: 1fr;
-    }
-
-    #content main .table-data .head {
-        min-width: 420px;
-    }
-
-    #content main .table-data .order table {
-        min-width: 420px;
-    }
-
-    #content main .table-data .todo .todo-list {
-        min-width: 420px;
     }
 }
 
@@ -1244,7 +1520,7 @@ html.dark .alert-error {
 .confirm-erase-confirm {
     flex: 1;
     padding: 16px;
-    background: #DB504A;
+    background: #db504a;
     border: none;
     color: #fff;
     cursor: pointer;

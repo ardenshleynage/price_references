@@ -35,9 +35,74 @@ class CheckUsers
         // Vérifier le rôle (1 = Super Admin, 2 = Admin, 3 = Reader)
         $role = Session::get('role');
         if (! in_array($role, [1, 2, 3])) {
-            // Ni Super Admin ni Admin ni Reader → rediriger vers login ou page d'erreur
             return redirect()->route('login')
                 ->with('error', 'Accès réservé aux administrateurs.');
+        }
+
+        // Vérifier l'accès basé sur le rôle
+        $currentRoute = $request->path();
+
+        // Routes Super Admin
+        $superAdminRoutes = ['super_admin'];
+
+        // Routes Admin
+        $adminRoutes = ['admins'];
+
+        // Routes Reader
+        $readerRoutes = ['readers'];
+
+        // Super Admin (rôle 1) - ne peut pas accéder aux routes admin et reader
+        if ($role === 1) {
+            foreach ($adminRoutes as $route) {
+                if (str_starts_with($currentRoute, $route)) {
+                    return response()->view('errors.403', [
+                        'message' => 'En tant que Super Administrateur, vous n\'avez pas accès à cette interface.',
+                    ], 403);
+                }
+            }
+            foreach ($readerRoutes as $route) {
+                if (str_starts_with($currentRoute, $route)) {
+                    return response()->view('errors.403', [
+                        'message' => 'En tant que Super Administrateur, vous n\'avez pas accès à cette interface.',
+                    ], 403);
+                }
+            }
+        }
+
+        // Admin (rôle 2) - ne peut pas accéder aux routes super admin et reader
+        if ($role === 2) {
+            foreach ($superAdminRoutes as $route) {
+                if (str_starts_with($currentRoute, $route)) {
+                    return response()->view('errors.403', [
+                        'message' => 'En tant qu\'Administrateur, vous n\'avez pas accès à cette interface.',
+                    ], 403);
+                }
+            }
+            foreach ($readerRoutes as $route) {
+                if (str_starts_with($currentRoute, $route)) {
+                    return response()->view('errors.403', [
+                        'message' => 'En tant qu\'Administrateur, vous n\'avez pas accès à cette interface.',
+                    ], 403);
+                }
+            }
+        }
+
+        // Reader (rôle 3) - ne peut pas accéder aux routes super admin et admin
+        if ($role === 3) {
+            foreach ($superAdminRoutes as $route) {
+                if (str_starts_with($currentRoute, $route)) {
+                    return response()->view('errors.403', [
+                        'message' => 'En tant que Lecteur, vous n\'avez pas accès à cette interface.',
+                    ], 403);
+                }
+            }
+            foreach ($adminRoutes as $route) {
+                if (str_starts_with($currentRoute, $route)) {
+                    return response()->view('errors.403', [
+                        'message' => 'En tant que Lecteur, vous n\'avez pas accès à cette interface.',
+                    ], 403);
+                }
+            }
         }
 
         // Rafraîchir la session à chaque requête

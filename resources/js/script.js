@@ -82,16 +82,37 @@ const searchButtonIcon = document.querySelector(
 const searchForm = document.querySelector("#content nav form");
 
 searchButton.addEventListener("click", function (e) {
-    if (window.innerWidth < 768) {
-        e.preventDefault();
-        searchForm.classList.toggle("show");
-        if (searchForm.classList.contains("show")) {
-            searchButtonIcon.classList.replace("bx-search", "bx-x");
-        } else {
-            searchButtonIcon.classList.replace("bx-x", "bx-search");
-        }
-    }
+    // Le comportement toggle est désactivé - la barre de recherche est toujours visible sur mobile
 });
+
+// Tabs Glider - Simple transition
+function initTabsGlider() {
+    const tabsContainers = document.querySelectorAll('.tabs');
+    
+    tabsContainers.forEach(tabs => {
+        const glider = tabs.querySelector('.glider');
+        const activeTab = tabs.querySelector('.tab.active');
+        
+        if (glider && activeTab) {
+            glider.style.width = activeTab.offsetWidth + 'px';
+            glider.style.transform = 'translateX(' + activeTab.offsetLeft + 'px)';
+        }
+        
+        const tabs_list = tabs.querySelectorAll('.tab');
+        tabs_list.forEach(tab => {
+            tab.addEventListener('click', function() {
+                const glider = tabs.querySelector('.glider');
+                if (glider) {
+                    glider.style.width = this.offsetWidth + 'px';
+                    glider.style.transform = 'translateX(' + this.offsetLeft + 'px)';
+                }
+            });
+        });
+    });
+}
+
+document.addEventListener('DOMContentLoaded', initTabsGlider);
+window.addEventListener('resize', initTabsGlider);
 
 // Dark Mode - Appliquer le thème depuis la session au chargement
 document.addEventListener("DOMContentLoaded", function () {

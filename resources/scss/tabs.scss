@@ -1,8 +1,12 @@
-@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap");
+/* Tabs Styles - Matching website color scheme */
+@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap");
 
 :root {
-    --primary-color: #185ee0;
-    --secondary-color: #e6eef9;
+    --tabs-bg: var(--light);
+    --tabs-primary: var(--blue);
+    --tabs-hover-bg: var(--light-blue);
+    --tabs-text: var(--dark);
+    --tabs-text-secondary: var(--dark-grey);
 }
 
 *,
@@ -12,113 +16,172 @@
 }
 
 body {
-    font-family: "Inter", sans-serif;
+    font-family: "Poppins", sans-serif;
 }
 
+/* Container */
 .container {
     position: relative;
-    left: 0;
     margin-top: 15px;
-    top: 0;
-    right: 0;
-    bottom: 0;
-    display: flex;
-    align-items: center;
-    justify-content: left;
+    margin-bottom: 15px;
+    width: 100%;
 }
 
-.tabs {
-    display: flex;
-    position: relative;
-    background-color: #fff;
-    box-shadow: 0 0 1px 0 rgba(#185ee0, 0.15), 0 6px 12px 0 rgba(#185ee0, 0.15);
-    padding: 0.75rem;
-    border-radius: 99px; // just a high number to create pill effect
-
-    * {
-        z-index: 2;
-    }
+/* Tabs Wrapper - permet le scroll horizontal */
+.tabs-wrapper {
+    width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
 }
 
-input[type="radio"] {
+.tabs-wrapper::-webkit-scrollbar {
     display: none;
 }
 
+/* Tabs - longueur basée sur le contenu */
+.tabs {
+    display: inline-flex;
+    position: relative;
+    background-color: var(--tabs-bg);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    padding: 5px;
+    border-radius: 50px;
+    gap: 4px;
+    min-width: auto;
+    width: auto;
+}
+
+.tabs * {
+    z-index: 2;
+}
+
+/* Tab Link */
 .tab {
     display: flex;
     align-items: center;
     justify-content: center;
-    height: 34px;
-    width: 150px;
-    font-size: 1.10rem;
+    height: 38px;
+    padding: 0 20px;
+    font-size: 0.95rem;
     font-weight: 500;
-    border-radius: 99px; // just a high number to create pill effect
+    color: var(--tabs-text-secondary);
+    border-radius: 50px;
     cursor: pointer;
-    transition: color 0.15s ease-in;
+    transition: all 0.2s ease-in;
+    text-decoration: none;
+    white-space: nowrap;
+    background: transparent;
+    border: none;
 }
 
-.notification {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 2rem;
-    height: 2rem;
-    margin-left: 0.75rem;
-    border-radius: 50%;
-    background-color: var(--secondary-color);
-    transition: 0.15s ease-in;
+.tab:hover {
+    background-color: var(--tabs-hover-bg);
+    color: var(--tabs-primary);
 }
 
-input[type="radio"] {
-    &:checked {
-        &+label {
-            color: var(--primary-color);
-
-            &>.notification {
-                background-color: var(--primary-color);
-                color: #fff;
-            }
-        }
-    }
+.tab.active {
+    background-color: var(--tabs-primary);
+    color: #fff;
+    box-shadow: 0 2px 8px rgba(60, 145, 230, 0.3);
 }
 
-input[id="radio-1"] {
-    &:checked {
-        &~.glider {
-            transform: translateX(0);
-        }
-    }
+/* Glider - indicateur visuel */
+.glider {
+    position: absolute;
+    top: 5px;
+    bottom: 5px;
+    left: 0;
+    background-color: var(--tabs-primary);
+    border-radius: 50px;
+    z-index: 1;
+    box-shadow: 0 2px 8px rgba(60, 145, 230, 0.3);
 }
 
-input[id="radio-2"] {
-    &:checked {
-        &~.glider {
-            transform: translateX(100%);
-        }
-    }
-}
-
-input[id="radio-3"] {
-    &:checked {
-        &~.glider {
-            transform: translateX(200%);
-        }
-    }
-}
-
-// .glider {
-//     position: relative;
-//     display: flex;
-//     height: 54px;
-//     width: 200px;
-//     background-color: var(--secondary-color);
-//     z-index: 1;
-//     border-radius: 99px; // just a high number to create pill effect
-//     transition: 0.25s ease-out;
-// }
-
-@media (max-width: 700px) {
+/* Responsive - Tablette */
+@media (max-width: 768px) {
     .tabs {
-        transform: scale(0.6);
+        padding: 4px;
+        border-radius: 40px;
     }
+
+    .tab {
+        height: 34px;
+        padding: 0 16px;
+        font-size: 0.9rem;
+    }
+
+    .glider {
+        top: 4px;
+        bottom: 4px;
+    }
+}
+
+/* Responsive - Mobile */
+@media (max-width: 576px) {
+    .container {
+        margin-top: 10px;
+        margin-bottom: 10px;
+        padding: 0 10px;
+    }
+
+    .tabs-wrapper {
+        padding-bottom: 5px;
+    }
+
+    .tabs {
+        padding: 4px;
+        border-radius: 30px;
+        gap: 3px;
+    }
+
+    .tab {
+        height: 32px;
+        padding: 0 12px;
+        font-size: 0.85rem;
+    }
+
+    .glider {
+        top: 4px;
+        bottom: 4px;
+    }
+}
+
+/* Petit écran */
+@media (max-width: 400px) {
+    .tab {
+        height: 30px;
+        padding: 0 10px;
+        font-size: 0.8rem;
+    }
+
+    .glider {
+        top: 4px;
+        bottom: 4px;
+    }
+}
+
+/* Dark mode - uses website's dark colors */
+html.dark .tabs {
+    background-color: #1a1a2e;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+html.dark .tab {
+    color: #ccc;
+}
+
+html.dark .tab:hover {
+    background-color: rgba(60, 145, 230, 0.2);
+    color: var(--blue);
+}
+
+html.dark .tab.active {
+    background-color: var(--blue);
+    color: #fff;
+}
+
+html.dark .glider {
+    background-color: var(--blue);
 }
