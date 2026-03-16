@@ -1,7 +1,7 @@
 <section id="sidebar">
     <a href="{{ route('readers_home') }}" class="brand">
         <i class='bx bxs-smile  bx-lg'></i>
-        <span class="text">AdminHub</span>
+        <span class="text">UserHub</span>
     </a>
     <ul class="side-menu top">
         <li class="{{ request()->routeIs('readers_home') ? 'active' : '' }}">
@@ -10,23 +10,20 @@
                 <span class="text">Dashboard</span>
             </a>
         </li>
-        <li
-            class="{{ request()->routeIs('readers_products_active') ? 'active' : '' }}">
+        <li class="{{ request()->routeIs('readers_products_active') ? 'active' : '' }}">
             <a href="{{ route('readers_products_active') }}">
                 <i class='bx bxs-shopping-bag-alt bx-sm'></i>
                 <span class="text">Produits</span>
             </a>
         </li>
-        <li
-            class="{{ request()->routeIs('readers_categories_active') ? 'active' : '' }}">
+        <li class="{{ request()->routeIs('readers_categories_active') ? 'active' : '' }}">
             <a href="{{ route('readers_categories_active') }}">
                 <i class='bx bxs-category'></i>
                 <span class="text">Catégories</span>
             </a>
         </li>
 
-        <li
-            class="{{ request()->routeIs('readers_branches_active') ? 'active' : '' }}">
+        <li class="{{ request()->routeIs('readers_branches_active') ? 'active' : '' }}">
             <a href="{{ route('readers_branches_active') }}">
                 <i class='bx bx-buildings bx-sm'></i>
                 <span class="text">Branches</span>

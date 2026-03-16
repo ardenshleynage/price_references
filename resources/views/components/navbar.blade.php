@@ -16,13 +16,13 @@
             <li><a
                     href="{{ $loggedUser->role == 1 ? route('super_admin_profile') : ($loggedUser->role == 2 ? route('admins_profile') : route('readers_profile')) }}">Mon
                     profil</a></li>
-            <li><a href="{{ route('logout') }}"
-                    onclick="event.preventDefault(); document.getElementById('logout-form').submit();">Déconnexion</a>
+            <li>
+                <a id="logout-form" class="logout" href="#" onclick="openLogoutModal(event)">
+                    <span class="text">Déconnexion</span>
+                </a>
+
             </li>
         </ul>
     </div>
-    <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
-        @csrf
-    </form>
 </nav>
 {{ $slot }}
