@@ -1,0 +1,16 @@
+{
+    "agents": [
+        "opencode"
+    ],
+    "guidelines": true,
+    "herd_mcp": false,
+    "mcp": true,
+    "packages": [
+        "nativephp/mobile"
+    ],
+    "sail": false,
+    "skills": [
+        "pest-testing",
+        "tailwindcss-development"
+    ]
+}
