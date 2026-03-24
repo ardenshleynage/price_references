@@ -1,11 +1,11 @@
 <?php
 
 use App\Http\Controllers\AdminsController;
-use App\Http\Controllers\ReadersController;
 use App\Http\Controllers\Appcontroller;
 use App\Http\Controllers\BranchController;
 use App\Http\Controllers\CategoriesController;
 use App\Http\Controllers\ProductsController;
+use App\Http\Controllers\ReadersController;
 use App\Http\Controllers\SuperAdminController;
 use App\Http\Controllers\UsersController;
 use Illuminate\Support\Facades\Auth;
@@ -14,7 +14,7 @@ use Illuminate\Support\Facades\Session;
 
 $mid = 'checkusers';
 
-/*-----------------------Home-----------------------*/
+/* -----------------------Home----------------------- */
 Route::get('/', function () {
     // Si l'utilisateur est connecté (session ou remember token), rediriger vers son dashboard
     if (Session::has('user_id') || Auth::check()) {
@@ -40,7 +40,6 @@ Route::get('/', function () {
     return redirect()->route('login');
 })->name('home');
 
-
 /*-----------------------
  *-----------------------
  *-----------------------
@@ -50,20 +49,19 @@ Route::get('/', function () {
  *-----------------------
  *-----------------------
  -----------------------*/
-/*-----------------------Super Admins Home-----------------------*/
+/* -----------------------Super Admins Home----------------------- */
 Route::get('/super_admin_home', [SuperAdminController::class, 'superAdminHome'])
     ->name('super_admin_home')->middleware($mid);
 
-
-/*-----------------------Super Admins profile-----------------------*/
+/* -----------------------Super Admins profile----------------------- */
 Route::get('/super_admin_profile', [SuperAdminController::class, 'superAdminProfile'])
     ->name('super_admin_profile')->middleware($mid);
 
-/*-----------------------Super Admins Search-----------------------*/
+/* -----------------------Super Admins Search----------------------- */
 Route::get('/super_admin_search', [SuperAdminController::class, 'superAdminSearch'])
     ->name('super_admin_search')->middleware($mid);
 
-/*-----------------------Super Admins Categories-----------------------*/
+/* -----------------------Super Admins Categories----------------------- */
 Route::get('/super_admin_categories', [CategoriesController::class, 'superAdminCategories'])
     ->name('super_admin_categories')->middleware($mid);
 Route::get('/super_admin_categories_active', [CategoriesController::class, 'superAdminCategoriesActive'])
@@ -98,7 +96,7 @@ Route::post('/categories/update-from-search', [CategoriesController::class, 'upd
     ->name('categories.update_from_search')
     ->middleware($mid);
 
-/*-----------------------Super Admins Branches-----------------------*/
+/* -----------------------Super Admins Branches----------------------- */
 Route::get('/super_admin_branches', [BranchController::class, 'superAdminBranches'])
     ->name('super_admin_branches')->middleware($mid);
 Route::get('/super_admin_branches_active', [BranchController::class, 'superAdminBranchesActive'])
@@ -133,7 +131,7 @@ Route::post('/branches/update-from-search', [BranchController::class, 'updateFro
     ->name('branches.update_from_search')
     ->middleware($mid);
 
-/*-----------------------Super Admins Users-----------------------*/
+/* -----------------------Super Admins Users----------------------- */
 Route::get('/super_admin_users', [SuperAdminController::class, 'superAdminUsers'])
     ->name('super_admin_users')->middleware($mid);
 Route::get('/super_admin_users_active', [SuperAdminController::class, 'superAdminUsersActive'])
@@ -165,7 +163,7 @@ Route::get('/users/edit-from-search/{id}', [SuperAdminController::class, 'editUs
 Route::post('/users/update-from-search', [SuperAdminController::class, 'updateUserFromSearch'])
     ->name('users.update_from_search')->middleware($mid);
 
-/*-----------------------Super Admins Products-----------------------*/
+/* -----------------------Super Admins Products----------------------- */
 Route::get('/super_admin_products', [ProductsController::class, 'superAdminProducts'])
     ->name('super_admin_products')->middleware($mid);
 Route::get('/super_admin_products_active', [ProductsController::class, 'superAdminProductsActive'])
@@ -211,23 +209,23 @@ Route::post('/products/update-from-search', [ProductsController::class, 'updateF
  *-----------------------
  -----------------------*/
 
-/*-----------------------Connexion/Déconexion-----------------------*/
+/* -----------------------Connexion/Déconexion----------------------- */
 Route::get('/login', [Appcontroller::class, 'Login'])->name('login');
 Route::post('/login/users', [UsersController::class, 'loginUsers'])->name('users.login_user');
 Route::post('/logout', [UsersController::class, 'logout'])->name('logout');
 
-/*-----------------------Password Reset-----------------------*/
+/* -----------------------Password Reset----------------------- */
 Route::get('/forget_password', [Appcontroller::class, 'forgetPassword'])->name('forget_password');
 Route::post('/password/email', [Appcontroller::class, 'sendResetLinkEmail'])->name('password.email');
 Route::get('/password/reset/{token}', [Appcontroller::class, 'showResetForm'])->name('password.reset');
 Route::post('/password/reset', [Appcontroller::class, 'reset'])->name('password.update');
 Route::get('/contact_it', [Appcontroller::class, 'contactIt'])->name('contact_it');
 
-/*-----------------------Route pour sauvegarder l'état du sidebar-----------------------*/
+/* -----------------------Route pour sauvegarder l'état du sidebar----------------------- */
 Route::post('/update-sidebar-state', [UsersController::class, 'updateSidebarState'])
     ->name('sidebar.update_state')->middleware($mid);
 
-/*-----------------------Profile-----------------------*/
+/* -----------------------Profile----------------------- */
 Route::post('/profile/update_username', [UsersController::class, 'updateUsername'])
     ->name('profile.update_username')->middleware($mid);
 Route::post('/profile/update_password', [UsersController::class, 'updatePassword'])
@@ -247,20 +245,19 @@ Route::post('/profile/update_theme', [UsersController::class, 'updateThemeFromPr
  *-----------------------
  *-----------------------*/
 
-/*-----------------------Admins Home-----------------------*/
+/* -----------------------Admins Home----------------------- */
 Route::get('/admins_home', [AdminsController::class, 'adminsHome'])
     ->name('admins_home')->middleware($mid);
 
-/*-----------------------Admins profile-----------------------*/
+/* -----------------------Admins profile----------------------- */
 Route::get('/admins_profile', [AdminsController::class, 'adminsProfile'])
     ->name('admins_profile')->middleware($mid);
 
-/*-----------------------Admins Search-----------------------*/
+/* -----------------------Admins Search----------------------- */
 Route::get('/admins_search', [AdminsController::class, 'adminsSearch'])
     ->name('admins_search')->middleware($mid);
 
-
-/*-----------------------Admins Categories-----------------------*/
+/* -----------------------Admins Categories----------------------- */
 Route::get('/admins_categories', [CategoriesController::class, 'adminsCategories'])
     ->name('admins_categories')->middleware($mid);
 Route::get('/admins_categories_active', [CategoriesController::class, 'adminsCategoriesActive'])
@@ -289,7 +286,7 @@ Route::post('/admins/categories/update-from-search', [CategoriesController::clas
     ->name('admins.categories.update_from_search')
     ->middleware($mid);
 
-/*-----------------------Admins Branches-----------------------*/
+/* -----------------------Admins Branches----------------------- */
 Route::get('/admins_branches', [BranchController::class, 'adminsBranches'])
     ->name('admins_branches')->middleware($mid);
 Route::get('/admins_branches_active', [BranchController::class, 'adminsBranchesActive'])
@@ -318,7 +315,7 @@ Route::post('/admins/branches/update-from-search', [BranchController::class, 'ad
     ->name('admins.branches.update_from_search')
     ->middleware($mid);
 
-/*-----------------------Admins Products-----------------------*/
+/* -----------------------Admins Products----------------------- */
 Route::get('/admins_products', [ProductsController::class, 'adminsProducts'])
     ->name('admins_products')->middleware($mid);
 Route::get('/admins_products_active', [ProductsController::class, 'adminsProductsActive'])
@@ -357,26 +354,64 @@ Route::post('/admins/products/update-from-search', [ProductsController::class, '
  *-----------------------
  -----------------------*/
 
-/*-----------------------Utilisateur Home-----------------------*/
+/* -----------------------Utilisateur Home----------------------- */
 Route::get('/readers_home', [ReadersController::class, 'readersHome'])
     ->name('readers_home')->middleware($mid);
 
-/*-----------------------Utilisateurprofile-----------------------*/
+/* -----------------------Utilisateurprofile----------------------- */
 Route::get('/readers_profile', [ReadersController::class, 'readersProfile'])
     ->name('readers_profile')->middleware($mid);
 
-/*-----------------------Utilisateur Search-----------------------*/
+/* -----------------------Utilisateur Search----------------------- */
 Route::get('/readers_search', [ReadersController::class, 'readersSearch'])
     ->name('readers_search')->middleware($mid);
 
-/*-----------------------Utilisateur Products-----------------------*/
+/* -----------------------Utilisateur Products----------------------- */
 Route::get('/readers_products_active', [ProductsController::class, 'readersProductsActive'])
     ->name('readers_products_active')->middleware($mid);
 
-/*-----------------------Admins Branches-----------------------*/
+/* -----------------------Admins Branches----------------------- */
 Route::get('/readers_branches_active', [BranchController::class, 'readersBranchesActive'])
     ->name('readers_branches_active')->middleware($mid);
 
-/*-----------------------Admins Categories-----------------------*/
+/* -----------------------Admins Categories----------------------- */
 Route::get('/readers_categories_active', [CategoriesController::class, 'readersCategoriesActive'])
     ->name('readers_categories_active')->middleware($mid);
+
+/* -----------------------Mobile App----------------------- */
+Route::prefix('mobile')->name('mobile.')->group(function () {
+    // Login route (public)
+    Route::get('/login', function () {
+        return view('mobile.login');
+    })->name('login');
+
+    // Protected routes (no middleware - auth handled by localStorage)
+    Route::get('/home', function () {
+        return view('mobile.master');
+    })->name('dashboard');
+
+    Route::get('/products', function () {
+        return view('mobile.products');
+    })->name('products');
+
+    Route::get('/categories', function () {
+        return view('mobile.categories');
+    })->name('categories');
+
+    Route::get('/branches', function () {
+        return view('mobile.branches');
+    })->name('branches');
+
+    Route::get('/profile', function () {
+        return view('mobile.profile');
+    })->name('profile');
+
+    Route::get('/search', function () {
+        return view('mobile.search');
+    })->name('search');
+});
+
+// Mobile app entry point
+Route::get('/mobile-app', function () {
+    return view('mobile.login');
+})->name('mobile.app');

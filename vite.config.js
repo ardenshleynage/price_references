@@ -34,6 +34,13 @@ export default defineConfig({
                 "resources/js/admins/search-modals.js",
 
                 "resources/scss/tabs.scss",
+
+                // Mobile
+                "resources/css/mobile/styles.css",
+                "resources/css/mobile/login.css",
+
+                "resources/js/mobile/script.js",
+                "resources/js/mobile/product.js",
             ],
             refresh: true,
         }),
