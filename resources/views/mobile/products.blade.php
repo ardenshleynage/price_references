@@ -4,6 +4,7 @@
 <x-mobile.header />
 
 <body data-api-url="{{ config('app.url') }}/api" data-login-url="{{ route('mobile.login') }}">
+    <x-mobile.pull-to-refresh />
     <!-- Navbar  -->
     <x-mobile.navbar />
     <!-- Main Content  -->

@@ -19,6 +19,16 @@ function getUser() {
     };
 }
 
+// Clear user data (logout)
+function clearUser() {
+    localStorage.removeItem('mobile_user_id');
+    localStorage.removeItem('mobile_token');
+    localStorage.removeItem('mobile_username');
+    localStorage.removeItem('mobile_role');
+}
+
+window.clearUser = clearUser;
+
 // Check if user is logged in
 function isLoggedIn() {
     const user = getUser();
@@ -63,12 +73,29 @@ function logout() {
 
 // Theme Toggle
 function toggleTheme() {
-    const isDark = document.documentElement.classList.toggle('dark');
-    localStorage.setItem('mobile_theme', isDark ? 'dark' : 'light');
+    const profileToggle = document.getElementById('themeToggle');
+    const isDark = profileToggle ? profileToggle.checked : document.documentElement.classList.toggle('dark');
+    
+    if (profileToggle) {
+        profileToggle.checked = isDark;
+    }
+    
+    if (isDark) {
+        document.documentElement.classList.add('dark');
+    } else {
+        document.documentElement.classList.remove('dark');
+    }
+    
+    const themeValue = isDark ? 'dark' : 'light';
+    localStorage.setItem('mobile_theme', themeValue);
     updateThemeIcon();
     updateProfileThemeToggle();
     
-    // Dispatch event for other components
+    apiRequest('/user/update/theme', {
+        method: 'PUT',
+        body: JSON.stringify({ theme: themeValue })
+    }).catch(err => console.error('Failed to save theme:', err));
+    
     window.dispatchEvent(new CustomEvent('themeChanged', { detail: { isDark } }));
 }
 
@@ -102,7 +129,14 @@ function initTheme() {
     if (savedTheme === 'dark') {
         document.documentElement.classList.add('dark');
     }
+    
+    const profileToggle = document.getElementById('themeToggle');
+    if (profileToggle) {
+        profileToggle.checked = savedTheme === 'dark';
+    }
+    
     updateThemeIcon();
+    updateProfileThemeToggle();
 }
 
 // API request helper
@@ -129,10 +163,14 @@ async function apiRequest(endpoint, options = {}) {
         if (response.status === 401) {
             logout();
         }
-        // Return error response for handling
         const errorData = await response.json().catch(() => ({}));
-        const error = new Error(errorData.error || 'Request failed');
+        console.log('API Error:', response.status, errorData);
+        const errorMessage = typeof errorData.error === 'string' 
+            ? errorData.error 
+            : (errorData.message || 'Request failed');
+        const error = new Error(errorMessage);
         error.response = response;
+        error.errorData = errorData;
         throw error;
     }
 
@@ -155,6 +193,7 @@ window.updateThemeIcon = updateThemeIcon;
 window.updateProfileThemeToggle = updateProfileThemeToggle;
 window.initTheme = initTheme;
 window.apiRequest = apiRequest;
+window.loadDashboardStats = loadDashboardStats;
 
 // ==========================================
 // Page-specific scripts

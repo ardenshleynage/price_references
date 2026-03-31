@@ -16,8 +16,8 @@
         <!-- Stats Grid -->
         <div class="stats-grid" id="statsGrid">
             <!-- Users (Super Admin only - shown via JS) -->
-            <a href="#" class="stat-card stat-users" style="text-decoration: none; display: none;"
-                id="usersStatCard">
+            <a href="{{ route('mobile.users') }}" class="stat-card stat-users"
+                style="text-decoration: none; display: none;" id="usersStatCard">
                 <div class="icon" style="background: #fce7f3; color: #db2777;">
                     <i class='bx bxs-group'></i>
                 </div>

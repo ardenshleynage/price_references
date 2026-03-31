@@ -49,9 +49,6 @@ body {
     background: var(--bg-color);
     color: var(--text-color);
     overflow-x: hidden;
-    transition:
-        background 0.3s,
-        color 0.3s;
 }
 
 body {
@@ -94,6 +91,7 @@ html.dark .navbar {
 }
 
 .navbar-actions {
+    text-decoration: none;
     display: flex;
     align-items: center;
     gap: 12px;
@@ -183,6 +181,11 @@ html.dark .navbar {
 
 .nav-item.active i {
     transform: scale(1.1);
+    color: white;
+}
+
+html.dark .nav-item.active i {
+    color: white;
 }
 
 /* Cards */
@@ -663,7 +666,9 @@ html.dark .toast {
     font-size: 20px;
     cursor: pointer;
     box-shadow: 0 2px 8px rgba(102, 126, 234, 0.4);
-    transition: transform 0.2s, box-shadow 0.2s;
+    transition:
+        transform 0.2s,
+        box-shadow 0.2s;
 }
 
 .add-btn:hover {
@@ -923,6 +928,7 @@ html.dark .toast {
     gap: 12px;
     color: var(--gray);
     font-size: 14px;
+    margin-right: 12px;
 }
 
 .profile-label i {
@@ -933,6 +939,57 @@ html.dark .toast {
     font-weight: 500;
     color: var(--text-color);
     font-size: 14px;
+    text-align: right;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    flex: 1;
+    min-width: 0;
+}
+
+.profile-value-with-action {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex: 1;
+    min-width: 0;
+}
+
+.profile-value-with-action .profile-value {
+    text-align: right;
+}
+
+.edit-btn {
+    background: transparent;
+    border: none;
+    color: var(--primary);
+    cursor: pointer;
+    padding: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 6px;
+    transition: background-color 0.2s, color 0.2s;
+    flex-shrink: 0;
+}
+
+.edit-btn:hover {
+    background: var(--primary);
+    color: white;
+}
+
+.edit-btn i {
+    font-size: 18px;
+}
+
+@media (max-width: 380px) {
+    .profile-value {
+        font-size: 12px;
+    }
+    
+    .edit-btn i {
+        font-size: 16px;
+    }
 }
 
 /* Stats Grid */
@@ -1182,6 +1239,35 @@ html.dark .toast {
     border-color: var(--primary);
 }
 
+.password-input-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.password-input-wrapper .form-input-mobile {
+    padding-right: 44px;
+    flex: 1;
+}
+
+.toggle-password {
+    position: absolute;
+    right: 12px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: var(--gray);
+    font-size: 20px;
+    padding: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.toggle-password:hover {
+    color: var(--text-color);
+}
+
 .form-textarea-mobile {
     resize: vertical;
     min-height: 80px;
@@ -1284,7 +1370,7 @@ html.dark .toast {
     border-radius: 12px;
     max-height: 200px;
     overflow-y: auto;
-    z-index: 100;
+    z-index: 3000;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }
 
@@ -1484,6 +1570,197 @@ html.dark .toast {
 }
 
 .search-item-page>i:last-child {
+    font-size: 20px;
+    color: var(--gray);
+}
+
+/* Theme Switch */
+.theme-switch {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    position: relative;
+    width: 52px;
+    height: 28px;
+}
+
+.theme-switch input {
+    display: none;
+}
+
+.theme-switch .slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: var(--gray);
+    transition: 0.3s;
+    border-radius: 28px;
+}
+
+.theme-switch .slider:before {
+    position: absolute;
+    content: "";
+    height: 22px;
+    width: 22px;
+    left: 3px;
+    bottom: 3px;
+    background-color: white;
+    transition: 0.3s;
+    border-radius: 50%;
+}
+
+.theme-switch input:checked + .slider {
+    background-color: var(--primary);
+}
+
+.theme-switch input:checked + .slider:before {
+    transform: translateX(24px);
+}
+
+.theme-switch-text {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--gray);
+    min-width: 20px;
+    text-align: center;
+    transition: color 0.3s;
+}
+
+.theme-switch-text.on {
+    color: var(--primary);
+}
+
+.theme-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+}
+
+.theme-label {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-size: 14px;
+    color: var(--text-color);
+}
+
+.theme-label i {
+    font-size: 20px;
+    color: var(--gray);
+}
+
+.theme-switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.slider {
+    position: relative;
+    width: 52px;
+    height: 28px;
+    background-color: var(--gray);
+    transition: 0.3s;
+    border-radius: 28px;
+    cursor: pointer;
+}
+
+.slider:before {
+    position: absolute;
+    content: "";
+    height: 22px;
+    width: 22px;
+    left: 3px;
+    bottom: 3px;
+    background-color: white;
+    transition: 0.3s;
+    border-radius: 50%;
+}
+
+input:checked + .slider {
+    background-color: var(--primary);
+}
+
+input:checked + .slider:before {
+    transform: translateX(24px);
+}
+
+.theme-switch-text {
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--gray);
+    min-width: 25px;
+    text-align: center;
+}
+
+input:checked ~ .theme-switch-text.on {
+    color: var(--primary);
+}
+
+/* Logout Modal */
+.logout-modal-content {
+    background: var(--card-bg);
+    border-radius: 20px;
+    width: 100%;
+    max-width: 320px;
+    padding: 24px;
+    position: relative;
+    animation: slideUp 0.3s ease;
+}
+
+.logout-header {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.logout-header i {
+    font-size: 48px;
+    color: var(--danger);
+    margin-bottom: 12px;
+    display: block;
+}
+
+.logout-header h2 {
+    font-size: 20px;
+    color: var(--text-color);
+    margin: 0;
+}
+
+.logout-body p {
+    text-align: center;
+    color: var(--gray);
+    margin-bottom: 24px;
+    font-size: 14px;
+}
+
+.logout-buttons {
+    display: flex;
+    gap: 12px;
+}
+
+.logout-buttons .btn {
+    flex: 1;
+}
+
+.theme-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.theme-label {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-size: 14px;
+    color: var(--text-color);
+}
+
+.theme-label i {
     font-size: 20px;
     color: var(--gray);
 }

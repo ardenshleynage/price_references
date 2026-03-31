@@ -29,10 +29,15 @@
     document.addEventListener('DOMContentLoaded', function() {
         const user = getUser();
         const usersNavItem = document.getElementById('usersNavItem');
-        
+
         if (usersNavItem && user.role == 1) {
             usersNavItem.style.display = 'flex';
-            usersNavItem.href = '{{ route("super_admin_users") }}';
+            usersNavItem.href = '{{ route('mobile.users') }}';
+            
+            // Set active class if on users page
+            if (window.location.href.includes('/mobile/users')) {
+                usersNavItem.classList.add('active');
+            }
         }
     });
 </script>

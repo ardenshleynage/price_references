@@ -385,6 +385,14 @@ Route::prefix('mobile')->name('mobile.')->group(function () {
         return view('mobile.login');
     })->name('login');
 
+    // Password reset route - redirects to mobile login with token/email
+    Route::get('/password/reset', function (\Illuminate\Http\Request $request) {
+        $token = $request->token;
+        $email = $request->email;
+
+        return redirect()->route('mobile.login', ['token' => $token, 'email' => $email]);
+    })->name('password.reset');
+
     // Protected routes (no middleware - auth handled by localStorage)
     Route::get('/home', function () {
         return view('mobile.master');
@@ -409,6 +417,10 @@ Route::prefix('mobile')->name('mobile.')->group(function () {
     Route::get('/search', function () {
         return view('mobile.search');
     })->name('search');
+
+    Route::get('/users', function () {
+        return view('mobile.users');
+    })->name('users');
 });
 
 // Mobile app entry point
