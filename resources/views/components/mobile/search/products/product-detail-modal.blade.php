@@ -23,7 +23,7 @@
                     </div>
                     <div class="modal-row">
                         <span class="modal-label">Catégorie:</span>
-                        <span class="modal-value" id="searchModalCategoryName">-</span>
+                        <span class="modal-value" id="searchModalProductCategoryName">-</span>
                     </div>
                     <div class="modal-row">
                         <span class="modal-label">Branche:</span>

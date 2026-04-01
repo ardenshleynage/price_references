@@ -784,12 +784,22 @@ html.dark .toast {
     justify-content: space-between;
     align-items: center;
     margin-bottom: 12px;
+    gap: 8px;
 }
 
 .data-card-header h3 {
     font-size: 16px;
     font-weight: 600;
     color: var(--text-color);
+    flex: 1;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.data-card-header .badge {
+    flex-shrink: 0;
 }
 
 .badge {
@@ -1129,10 +1139,12 @@ html.dark .toast {
     color: var(--text-color);
     text-align: center;
     margin-bottom: 8px;
+    width: 100%;
+    display: block;
 }
 
 .modal-status-badge {
-    display: inline-block;
+    display: block;
     padding: 4px 12px;
     border-radius: 20px;
     font-size: 12px;
@@ -1140,7 +1152,6 @@ html.dark .toast {
     color: white;
     text-align: center;
     margin: 0 auto 16px;
-    display: block;
     width: fit-content;
 }
 
@@ -1562,11 +1573,21 @@ html.dark .toast {
     font-size: 15px;
     font-weight: 500;
     color: var(--text-color);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
 
 .search-item-detail {
     font-size: 12px;
     color: var(--gray);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.search-item-page > span:last-child {
+    flex-shrink: 0;
 }
 
 .search-item-page>i:last-child {

@@ -126,11 +126,36 @@ class ApiController extends Controller
     public function products(Request $request): JsonResponse
     {
         $status = $request->query('status', 1);
+        $userId = $request->header('X-User-ID');
+
+        if (! $userId) {
+            return response()->json(['error' => 'Non autorisé'], 401);
+        }
+
+        $user = User::find($userId);
+
+        if (! $user) {
+            return response()->json(['error' => 'Utilisateur non trouvé'], 404);
+        }
 
         $query = Products::with(['branch', 'category']);
 
-        if ($status !== 'all') {
-            $query->where('status', $status);
+        if ($user->role === 3) {
+            $query->where('status', 1);
+        } elseif ($user->role === 2) {
+            if ($status === 'all') {
+                $query->whereIn('status', [1, 2]);
+            } elseif ($status == 0) {
+                return response()->json(['error' => 'Accès refusé'], 403);
+            } elseif (in_array($status, [1, 2])) {
+                $query->where('status', $status);
+            } else {
+                $query->where('status', 1);
+            }
+        } else {
+            if ($status !== 'all') {
+                $query->where('status', $status);
+            }
         }
 
         $products = $query->orderBy('updated_at', 'desc')->paginate(10);
@@ -247,10 +272,16 @@ class ApiController extends Controller
             return response()->json(['error' => 'Produit non trouvé'], 404);
         }
 
-        $product->status = 0;
+        if ($user->role === 2) {
+            $product->status = 2;
+            $message = 'Produit supprimé avec succès.';
+        } else {
+            $product->status = 0;
+            $message = 'Produit supprimé avec succès.';
+        }
         $product->save();
 
-        return response()->json(['success' => true, 'message' => 'Produit supprimé avec succès']);
+        return response()->json(['success' => true, 'message' => $message]);
     }
 
     public function restoreProduct(Request $request): JsonResponse
@@ -293,7 +324,7 @@ class ApiController extends Controller
 
         $user = User::find($userId);
 
-        if (! $user || $user->role !== 1) {
+        if (! $user || ($user->role !== 1 && $user->role !== 2)) {
             return response()->json(['error' => 'Non autorisé'], 403);
         }
 
@@ -305,6 +336,13 @@ class ApiController extends Controller
 
         if (! $product) {
             return response()->json(['error' => 'Produit non trouvé'], 404);
+        }
+
+        if ($user->role === 2) {
+            $product->status = 0;
+            $product->save();
+
+            return response()->json(['success' => true, 'message' => 'Produit supprimé définitivement']);
         }
 
         $product->delete();
@@ -469,6 +507,8 @@ class ApiController extends Controller
             // Admin: active (1) and blocked (2), no deleted
             if ($status === 'all') {
                 $query->whereIn('status', [1, 2]);
+            } elseif ($status == 0) {
+                return response()->json(['error' => 'Accès refusé'], 403);
             } elseif (in_array($status, [1, 2])) {
                 $query->where('status', $status);
             } else {
@@ -785,7 +825,7 @@ class ApiController extends Controller
 
         $user = User::find($userId);
 
-        if (! $user || $user->role !== 1) {
+        if (! $user || ($user->role !== 1 && $user->role !== 2)) {
             return response()->json(['error' => 'Non autorisé'], 403);
         }
 
@@ -795,7 +835,15 @@ class ApiController extends Controller
             ]);
 
             $category = Categories::findOrFail($validated['id']);
-            $category->forceDelete();
+
+            if ($user->role === 2) {
+                // Admin: fake permanent delete (status = 0)
+                $category->status = 0;
+                $category->save();
+            } else {
+                // Super Admin: real permanent delete
+                $category->forceDelete();
+            }
 
             return response()->json([
                 'success' => true,
@@ -830,12 +878,15 @@ class ApiController extends Controller
             // Reader: only active branches
             $query->where('status', 1);
         } elseif ($user->role === 2) {
-            // Admin: active (1) and blocked (2)
-            if ($status !== 'all') {
+            // Admin: active (1) and blocked (2), no deleted
+            if ($status === 'all') {
                 $query->whereIn('status', [1, 2]);
-                if ($status == 1 || $status == 2) {
-                    $query->where('status', $status);
-                }
+            } elseif ($status == 0) {
+                return response()->json(['error' => 'Accès refusé'], 403);
+            } elseif ($status == 1 || $status == 2) {
+                $query->where('status', $status);
+            } else {
+                $query->where('status', 1);
             }
         } else {
             // Super Admin: all statuses
@@ -1152,7 +1203,7 @@ class ApiController extends Controller
 
         $user = User::find($userId);
 
-        if (! $user || $user->role !== 1) {
+        if (! $user || ($user->role !== 1 && $user->role !== 2)) {
             return response()->json(['error' => 'Non autorisé'], 403);
         }
 
@@ -1162,7 +1213,15 @@ class ApiController extends Controller
             ]);
 
             $branch = Branches::findOrFail($validated['id']);
-            $branch->forceDelete();
+
+            if ($user->role === 2) {
+                // Admin: fake permanent delete (status = 0)
+                $branch->status = 0;
+                $branch->save();
+            } else {
+                // Super Admin: real permanent delete
+                $branch->forceDelete();
+            }
 
             return response()->json([
                 'success' => true,
@@ -1320,23 +1379,38 @@ class ApiController extends Controller
         }
 
         // All roles (Super Admin, Admin, Reader) see these stats
-        $stats['categories'] = [
-            'total' => Categories::count(),
-            'active' => Categories::where('status', 1)->count(),
-            'blocked' => Categories::where('status', 2)->count(),
-        ];
+        if ($user->role === 3) {
+            // Reader: only sees active counts
+            $stats['categories'] = [
+                'total' => Categories::where('status', 1)->count(),
+            ];
 
-        $stats['products'] = [
-            'total' => Products::count(),
-            'active' => Products::where('status', 1)->count(),
-            'blocked' => Products::where('status', 2)->count(),
-        ];
+            $stats['products'] = [
+                'total' => Products::where('status', 1)->count(),
+            ];
 
-        $stats['branches'] = [
-            'total' => Branches::count(),
-            'active' => Branches::where('status', 1)->count(),
-            'blocked' => Branches::where('status', 2)->count(),
-        ];
+            $stats['branches'] = [
+                'total' => Branches::where('status', 1)->count(),
+            ];
+        } else {
+            $stats['categories'] = [
+                'total' => Categories::count(),
+                'active' => Categories::where('status', 1)->count(),
+                'blocked' => Categories::where('status', 2)->count(),
+            ];
+
+            $stats['products'] = [
+                'total' => Products::count(),
+                'active' => Products::where('status', 1)->count(),
+                'blocked' => Products::where('status', 2)->count(),
+            ];
+
+            $stats['branches'] = [
+                'total' => Branches::count(),
+                'active' => Branches::where('status', 1)->count(),
+                'blocked' => Branches::where('status', 2)->count(),
+            ];
+        }
 
         return response()->json($stats);
     }

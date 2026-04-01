@@ -6,8 +6,6 @@
 <body data-api-url="{{ config('app.url') }}/api" data-login-url="{{ route('mobile.login') }}"
     data-dashboard-url="{{ route('mobile.dashboard') }}">
 
-    <x-mobile.pull-to-refresh />
-
     <x-mobile.navbar />
 
     <x-mobile.profile.main-content />

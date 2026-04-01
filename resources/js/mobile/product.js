@@ -230,9 +230,9 @@ window.loadProducts = async function() {
                 <div class="data-card" onclick="openProductModal(${product.id})" style="cursor: pointer;">
                     <div class="data-card-header">
                         <h3>${product.product_name || product.name || '-'}</h3>
-                        <span class="badge ${getStatusBadgeClass(product.status)}">
+                        ${userRole !== 3 ? `<span class="badge ${getStatusBadgeClass(product.status)}">
                             ${getStatusLabel(product.status)}
-                        </span>
+                        </span>` : ''}
                     </div>
                     <div class="data-card-body">
                         <div class="data-item">
@@ -299,8 +299,13 @@ window.openProductModal = async function(productId) {
         document.getElementById('modalUpdatedAt').textContent = formatDate(product.updated_at);
 
         const statusBadge = document.getElementById('modalStatusBadge');
-        statusBadge.className = 'modal-status-badge ' + getStatusBadgeClass(product.status);
-        statusBadge.textContent = getStatusLabel(product.status);
+        if (userRole !== 3) {
+            statusBadge.className = 'modal-status-badge ' + getStatusBadgeClass(product.status);
+            statusBadge.textContent = getStatusLabel(product.status);
+            statusBadge.style.display = 'block';
+        } else {
+            statusBadge.style.display = 'none';
+        }
 
         const postScriptumRow = document.getElementById('postScriptumRow');
         if (product.post_scriptum) {
@@ -339,11 +344,15 @@ window.openProductModal = async function(productId) {
                 actionsHtml += `
                     <button class="btn btn-danger-outline" onclick="deleteProduct(${product.id})"><i class='bx bxs-trash'></i> Supprimer</button>
                 `;
-            } else if (productStatus === 0) {
+            } else if (productStatus === 2) {
                 actionsHtml += `
+                    <button class="btn btn-primary" onclick="openEditProductModal(${product.id})"><i class='bx bxs-edit'></i> Modifier</button>
                     <button class="btn btn-success" onclick="restoreProduct(${product.id})"><i class='bx bxs-trash-alt'></i> Restaurer</button>
+                    <button class="btn btn-danger" onclick="openConfirmEraseModal(${product.id})"><i class='bx bxs-trash-alt'></i> Supprimer définitivement</button>
                 `;
             }
+        } else if (userRole === 3) {
+            // Reader: no actions
         }
 
         actionsDiv.innerHTML = actionsHtml;
@@ -645,6 +654,13 @@ document.getElementById('confirmEraseModal').addEventListener('click', function(
 
 window.loadTabs = async function() {
     const statusTabs = document.getElementById('statusTabs');
+    
+    if (userRole === 3) {
+        statusTabs.style.display = 'none';
+        return;
+    }
+    
+    statusTabs.style.display = 'flex';
 
     try {
         const counts = await apiRequest('/products/counts');
@@ -673,7 +689,15 @@ window.loadTabs = async function() {
             `;
         }
 
-        if (userRole === 1 || userRole === 2) {
+        if (userRole === 2) {
+            tabsHtml += `
+                <button class="status-tab ${currentStatus === 2 ? 'active' : ''}" onclick="changeStatus(2)">
+                    Corbeille(${counts.blocked})
+                </button>
+            `;
+        }
+
+        if (userRole === 1) {
             tabsHtml += `
                 <button class="status-tab ${currentStatus === 0 ? 'active' : ''}" onclick="changeStatus(0)">
                     Corbeille(${counts.deleted})
@@ -704,8 +728,10 @@ window.getStatusBadgeClass = function(status) {
 window.getStatusLabel = function(status) {
     const s = parseInt(status);
     if (s === 1) return 'Actif';
-    if (s === 2) return 'Bloqué';
     if (s === 0) return 'Supprimé';
+    if (s === 2) {
+        return userRole == 2 ? 'Supprimé' : 'Bloqué';
+    }
     return 'Inconnu';
 }
 

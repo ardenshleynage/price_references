@@ -53,9 +53,9 @@ window.loadBranches = async function () {
                 <div class="data-card" onclick="openBranchModal(${branch.id})" style="cursor: pointer;">
                     <div class="data-card-header">
                         <h3>${branch.branche_name || "-"}</h3>
-                        <span class="badge ${getBranchStatusBadgeClass(branch.status)}">
+                        ${userRole !== 3 ? `<span class="badge ${getBranchStatusBadgeClass(branch.status)}">
                             ${getBranchStatusLabel(branch.status)}
-                        </span>
+                        </span>` : ''}
                     </div>
                     <div class="data-card-body">
                         <div class="data-item">
@@ -112,9 +112,14 @@ window.openBranchModal = async function (branchId) {
             branch.branche_name || "-";
 
         const statusBadge = document.getElementById("modalBranchStatusBadge");
-        statusBadge.className =
-            "modal-status-badge " + getBranchStatusBadgeClass(branch.status);
-        statusBadge.textContent = getBranchStatusLabel(branch.status);
+        if (userRole !== 3) {
+            statusBadge.className =
+                "modal-status-badge " + getBranchStatusBadgeClass(branch.status);
+            statusBadge.textContent = getBranchStatusLabel(branch.status);
+            statusBadge.style.display = 'block';
+        } else {
+            statusBadge.style.display = 'none';
+        }
 
         document.getElementById("modalBranchCreatedAt").textContent =
             formatDate(branch.created_at);
@@ -155,13 +160,11 @@ window.openBranchModal = async function (branchId) {
                 actionsHtml += `
                     <button class="btn btn-primary" onclick="openEditBranchModal(${branch.id})"><i class='bx bxs-edit'></i> Modifier</button>
                     <button class="btn btn-success" onclick="restoreBranch(${branch.id})"><i class='bx bxs-trash-alt'></i> Restaurer</button>
-                `;
-            } else if (branchStatus === 0) {
-                actionsHtml += `
-                    <button class="btn btn-primary" onclick="openEditBranchModal(${branch.id})"><i class='bx bxs-edit'></i> Modifier</button>
-                    <button class="btn btn-success" onclick="restoreBranch(${branch.id})"><i class='bx bxs-trash-alt'></i> Restaurer</button>
+                    <button class="btn btn-danger" onclick="openConfirmEraseBranchModal(${branch.id})"><i class='bx bxs-trash-alt'></i> Supprimer définitivement</button>
                 `;
             }
+        } else if (userRole === 3) {
+            // Reader: no actions
         }
 
         actionsDiv.innerHTML = actionsHtml;
@@ -309,6 +312,13 @@ window.confirmEraseBranch = async function () {
 
 window.loadTabs = async function () {
     const statusTabs = document.getElementById("statusTabs");
+    
+    if (userRole === 3) {
+        statusTabs.style.display = 'none';
+        return;
+    }
+    
+    statusTabs.style.display = 'flex';
 
     try {
         const counts = await apiRequest("/branches/counts");
@@ -335,7 +345,17 @@ window.loadTabs = async function () {
                     Bloqué(${counts.blocked || 0})
                 </button>
             `;
+        }
 
+        if (userRole === 2) {
+            tabsHtml += `
+                <button class="status-tab ${currentStatus === 2 ? "active" : ""}" onclick="changeBranchStatus(2)">
+                    Corbeille(${counts.blocked || 0})
+                </button>
+            `;
+        }
+
+        if (userRole === 1) {
             tabsHtml += `
                 <button class="status-tab ${currentStatus === 0 ? "active" : ""}" onclick="changeBranchStatus(0)">
                     Corbeille(${counts.deleted || 0})
@@ -366,8 +386,10 @@ window.getBranchStatusBadgeClass = function (status) {
 window.getBranchStatusLabel = function (status) {
     const s = parseInt(status);
     if (s === 1) return "Actif";
-    if (s === 2) return "Bloqué";
-    if (s === 0) return "Supprimé";
+    if (s === 0) return "Supprimée";
+    if (s === 2) {
+        return userRole == 2 ? "Supprimée" : "Bloqué";
+    }
     return "Inconnu";
 };
 

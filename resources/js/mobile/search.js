@@ -1,6 +1,6 @@
 let searchTimeout = null;
 let selectedProduct = null;
-window.window.userRole = 3;
+window.userRole = 3;
 let currentSearchQuery = '';
 
 window.initPage = async function() {
@@ -11,8 +11,8 @@ window.initPage = async function() {
         document.querySelector('.search-input-container-page').style.display = 'none';
         return;
     }
-    window.window.userRole = parseInt(user.role) || 3;
-    console.log('Search page - User role set to:', window.window.userRole);
+    window.userRole = parseInt(user.role) || 3;
+    console.log('Search page - User role set to:', window.userRole);
 }
 
 window.goBack = function() {
@@ -63,10 +63,10 @@ window.performSearch = async function(query) {
                 html += `<div class="search-item-page" onclick="openProductModal(${item.id})">
                     <i class='bx bxs-package'></i>
                     <div class="search-item-content">
-                        <span class="search-item-name">${item.product_name}</span>
+                        <span class="search-item-name">${item.product_name || '-'}</span>
                         <span class="search-item-detail">${item.category?.category_name || '-'} | ${item.branch?.branche_name || '-'}</span>
                     </div>
-                    <span class="badge ${getStatusBadgeClass(item.status)}">${getStatusLabel(item.status)}</span>
+                    ${window.userRole !== 3 ? `<span class="badge ${getStatusBadgeClass(item.status)}">${getStatusLabel(item.status)}</span>` : ''}
                 </div>`;
             });
             html += `</div></div>`;
@@ -83,10 +83,10 @@ window.performSearch = async function(query) {
                 html += `<div class="search-item-page" onclick="openCategoryModal(${item.id})">
                     <i class='bx bxs-folder'></i>
                     <div class="search-item-content">
-                        <span class="search-item-name">${item.category_name}</span>
+                        <span class="search-item-name">${item.category_name || '-'}</span>
                         <span class="search-item-detail">${item.created_at_formatted || ''}</span>
                     </div>
-                    <span class="badge ${getCategoryStatusBadgeClass(item.status)}">${getCategoryStatusLabel(item.status)}</span>
+                    ${window.userRole !== 3 ? `<span class="badge ${getCategoryStatusBadgeClass(item.status)}">${getCategoryStatusLabel(item.status)}</span>` : ''}
                 </div>`;
             });
             html += `</div></div>`;
@@ -103,16 +103,16 @@ window.performSearch = async function(query) {
                 html += `<div class="search-item-page" onclick="openBranchModalFromSearch(${item.id})">
                     <i class='bx bxs-store'></i>
                     <div class="search-item-content">
-                        <span class="search-item-name">${item.branche_name}</span>
+                        <span class="search-item-name">${item.branche_name || '-'}</span>
                         <span class="search-item-detail">${item.created_at_formatted || ''}</span>
                     </div>
-                    <span class="badge ${getBranchStatusBadgeClass(item.status)}">${getBranchStatusLabel(item.status)}</span>
+                    ${window.userRole !== 3 ? `<span class="badge ${getBranchStatusBadgeClass(item.status)}">${getBranchStatusLabel(item.status)}</span>` : ''}
                 </div>`;
             });
             html += `</div></div>`;
         }
 
-        if (data.users && data.users.length) {
+        if (data.users && data.users.length && window.userRole === 1) {
             html += `<div class="search-group">`;
             html += `<div class="search-group-header" onclick="toggleSearchGroup('users')">
                 <span class="search-group-title">Utilisateurs (${data.users.length})</span>
@@ -121,7 +121,7 @@ window.performSearch = async function(query) {
             html += `<div class="search-group-list" id="users-list">`;
             data.users.forEach(item => {
                 const statusClass = item.status == 1 ? 'badge-active' : (item.status == 2 ? 'badge-blocked' : 'badge-deleted');
-                const statusLabel = item.status == 1 ? 'Actif' : (item.status == 2 ? 'Bloqué' : 'Supprimé');
+                const statusLabel = item.status == 1 ? 'Actif' : (item.status == 0 ? 'Supprimé' : (window.userRole == 2 ? 'Supprimé' : 'Bloqué'));
                 html += `<div class="search-item-page" onclick="openSearchUserModal(${item.id})">
                     <i class='bx bxs-user'></i>
                     <div class="search-item-content">
@@ -168,8 +168,10 @@ window.getStatusBadgeClass = function(status) {
 window.getStatusLabel = function(status) {
     const s = parseInt(status);
     if (s === 1) return 'Actif';
-    if (s === 2) return 'Bloqué';
     if (s === 0) return 'Supprimé';
+    if (s === 2) {
+        return window.userRole == 2 ? 'Supprimée' : 'Bloqué';
+    }
     return 'Inconnu';
 }
 
@@ -202,7 +204,7 @@ window.openProductModal = async function(productId) {
         document.getElementById('searchModalSinglePrice').textContent = product.single_price ? parseFloat(product
             .single_price).toFixed(2) + ' HTG' : '-';
         document.getElementById('searchModalDetailedPrice').textContent = product.detailed_price || '-';
-        document.getElementById('searchModalCategoryName').textContent = product.category?.category_name || '-';
+        document.getElementById('searchModalProductCategoryName').textContent = product.category?.category_name || '-';
         document.getElementById('searchModalProductBranchName').textContent = product.branch?.branche_name || '-';
         document.getElementById('searchModalCreatedAt').textContent = product.created_at_formatted || formatDate(
             product.created_at);
@@ -210,8 +212,13 @@ window.openProductModal = async function(productId) {
             product.updated_at);
 
         const statusBadge = document.getElementById('searchModalStatusBadge');
-        statusBadge.className = 'modal-status-badge ' + getStatusBadgeClass(product.status);
-        statusBadge.textContent = getStatusLabel(product.status);
+        if (window.userRole !== 3) {
+            statusBadge.className = 'modal-status-badge ' + getStatusBadgeClass(product.status);
+            statusBadge.textContent = getStatusLabel(product.status);
+            statusBadge.style.display = 'block';
+        } else {
+            statusBadge.style.display = 'none';
+        }
 
         const postScriptumRow = document.getElementById('searchPostScriptumRow');
         if (product.post_scriptum) {
@@ -251,10 +258,14 @@ window.openProductModal = async function(productId) {
             if (productStatus === 1) {
                 actionsHtml +=
                     `<button class="btn btn-danger-outline" onclick="deleteProduct(${product.id})"><i class='bx bxs-trash'></i> Supprimer</button>`;
-            } else if (productStatus === 0) {
+            } else if (productStatus === 2) {
                 actionsHtml +=
-                    `<button class="btn btn-success" onclick="restoreProduct(${product.id})"><i class='bx bxs-trash-alt'></i> Restaurer</button>`;
+                    `<button class="btn btn-primary" onclick="openEditProductModal(${product.id})"><i class='bx bxs-edit'></i> Modifier</button>
+                     <button class="btn btn-success" onclick="restoreProduct(${product.id})"><i class='bx bxs-trash-alt'></i> Restaurer</button>
+                     <button class="btn btn-danger" onclick="openConfirmEraseModal(${product.id})"><i class='bx bxs-trash-alt'></i> Supprimer définitivement</button>`;
             }
+        } else if (window.userRole === 3) {
+            // Reader: no actions
         }
 
         actionsDiv.innerHTML = actionsHtml;
@@ -608,11 +619,20 @@ window.openCategoryModal = async function(categoryId) {
 
         selectedSearchCategory = category;
 
-        document.getElementById('searchModalCategoryName').textContent = category.category_name || '-';
+        const nameEl = modal.querySelector('#searchModalCategoryName');
+        
+        if (nameEl) {
+            nameEl.textContent = category.category_name || '-';
+        }
 
         const statusBadge = document.getElementById('searchModalCategoryStatusBadge');
-        statusBadge.className = 'modal-status-badge ' + getCategoryStatusBadgeClass(category.status);
-        statusBadge.textContent = getCategoryStatusLabel(category.status);
+        if (window.userRole !== 3) {
+            statusBadge.className = 'modal-status-badge ' + getCategoryStatusBadgeClass(category.status);
+            statusBadge.textContent = getCategoryStatusLabel(category.status);
+            statusBadge.style.display = 'block';
+        } else {
+            statusBadge.style.display = 'none';
+        }
 
         document.getElementById('searchModalCategoryCreatedAt').textContent = category.created_at_formatted || formatDate(category.created_at);
         document.getElementById('searchModalCategoryUpdatedAt').textContent = category.updated_at_formatted || formatDate(category.updated_at);
@@ -653,13 +673,11 @@ window.openCategoryModal = async function(categoryId) {
                 actionsHtml += `
                     <button class="btn btn-primary" onclick="openSearchEditCategoryModal(${category.id})"><i class='bx bxs-edit'></i> Modifier</button>
                     <button class="btn btn-success" onclick="restoreCategoryFromSearch(${category.id})"><i class='bx bxs-trash-alt'></i> Restaurer</button>
-                `;
-            } else if (categoryStatus === 0) {
-                actionsHtml += `
-                    <button class="btn btn-primary" onclick="openSearchEditCategoryModal(${category.id})"><i class='bx bxs-edit'></i> Modifier</button>
-                    <button class="btn btn-success" onclick="restoreCategoryFromSearch(${category.id})"><i class='bx bxs-trash-alt'></i> Restaurer</button>
+                    <button class="btn btn-danger" onclick="openConfirmEraseCategoryModal(${category.id})"><i class='bx bxs-trash-alt'></i> Supprimer définitivement</button>
                 `;
             }
+        } else if (window.userRole === 3) {
+            // Reader: no actions
         }
 
         actionsDiv.innerHTML = actionsHtml;
@@ -802,8 +820,10 @@ window.getCategoryStatusBadgeClass = function(status) {
 window.getCategoryStatusLabel = function(status) {
     const s = parseInt(status);
     if (s === 1) return 'Actif';
-    if (s === 2) return 'Bloqué';
-    if (s === 0) return 'Supprimé';
+    if (s === 0) return 'Supprimée';
+    if (s === 2) {
+        return window.userRole == 2 ? 'Supprimée' : 'Bloqué';
+    }
     return 'Inconnu';
 }
 
@@ -881,8 +901,10 @@ window.getUserStatusBadgeClass = function(status) {
 window.getUserStatusLabel = function(status) {
     const s = parseInt(status);
     if (s === 1) return 'Actif';
-    if (s === 2) return 'Bloqué';
     if (s === 0) return 'Supprimé';
+    if (s === 2) {
+        return window.userRole == 2 ? 'Supprimé' : 'Bloqué';
+    }
     return 'Inconnu';
 }
 
@@ -1127,8 +1149,13 @@ window.openBranchModalFromSearch = async function(branchId) {
         document.getElementById('searchModalBranchName').textContent = branch.branche_name || '-';
 
         const statusBadge = document.getElementById('searchModalBranchStatusBadge');
-        statusBadge.className = 'modal-status-badge ' + getBranchStatusBadgeClass(branch.status);
-        statusBadge.textContent = getBranchStatusLabel(branch.status);
+        if (window.userRole !== 3) {
+            statusBadge.className = 'modal-status-badge ' + getBranchStatusBadgeClass(branch.status);
+            statusBadge.textContent = getBranchStatusLabel(branch.status);
+            statusBadge.style.display = 'block';
+        } else {
+            statusBadge.style.display = 'none';
+        }
 
         document.getElementById('searchModalBranchCreatedAt').textContent = branch.created_at_formatted || formatDate(branch.created_at);
         document.getElementById('searchModalBranchUpdatedAt').textContent = branch.updated_at_formatted || formatDate(branch.updated_at);
@@ -1169,13 +1196,11 @@ window.openBranchModalFromSearch = async function(branchId) {
                 actionsHtml += `
                     <button class="btn btn-primary" onclick="openSearchEditBranchModal(${branch.id})"><i class='bx bxs-edit'></i> Modifier</button>
                     <button class="btn btn-success" onclick="restoreBranchFromSearch(${branch.id})"><i class='bx bxs-trash-alt'></i> Restaurer</button>
-                `;
-            } else if (branchStatus === 0) {
-                actionsHtml += `
-                    <button class="btn btn-primary" onclick="openSearchEditBranchModal(${branch.id})"><i class='bx bxs-edit'></i> Modifier</button>
-                    <button class="btn btn-success" onclick="restoreBranchFromSearch(${branch.id})"><i class='bx bxs-trash-alt'></i> Restaurer</button>
+                    <button class="btn btn-danger" onclick="openConfirmEraseBranchModal(${branch.id})"><i class='bx bxs-trash-alt'></i> Supprimer définitivement</button>
                 `;
             }
+        } else if (window.userRole === 3) {
+            // Reader: no actions
         }
 
         actionsDiv.innerHTML = actionsHtml;
@@ -1318,8 +1343,10 @@ window.getBranchStatusBadgeClass = function(status) {
 window.getBranchStatusLabel = function(status) {
     const s = parseInt(status);
     if (s === 1) return 'Actif';
-    if (s === 2) return 'Bloqué';
-    if (s === 0) return 'Supprimé';
+    if (s === 0) return 'Supprimée';
+    if (s === 2) {
+        return window.userRole == 2 ? 'Supprimée' : 'Bloqué';
+    }
     return 'Inconnu';
 }
 

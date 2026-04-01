@@ -514,6 +514,13 @@ if (confirmEraseModal) {
 
 window.loadTabs = async function() {
     const statusTabs = document.getElementById('statusTabs');
+    
+    if (userRole === 3) {
+        statusTabs.style.display = 'none';
+        return;
+    }
+    
+    statusTabs.style.display = 'flex';
 
     try {
         const counts = await apiRequest('/users/counts');

@@ -49,9 +49,9 @@ window.loadCategories = async function() {
                 <div class="data-card" onclick="openCategoryModal(${category.id})" style="cursor: pointer;">
                     <div class="data-card-header">
                         <h3>${category.category_name || '-'}</h3>
-                        <span class="badge ${getCategoryStatusBadgeClass(category.status)}">
+                        ${userRole !== 3 ? `<span class="badge ${getCategoryStatusBadgeClass(category.status)}">
                             ${getCategoryStatusLabel(category.status)}
-                        </span>
+                        </span>` : ''}
                     </div>
                     <div class="data-card-body">
                         <div class="data-item">
@@ -103,8 +103,13 @@ window.openCategoryModal = async function(categoryId) {
         document.getElementById('modalCategoryName').textContent = category.category_name || '-';
 
         const statusBadge = document.getElementById('modalCategoryStatusBadge');
-        statusBadge.className = 'modal-status-badge ' + getCategoryStatusBadgeClass(category.status);
-        statusBadge.textContent = getCategoryStatusLabel(category.status);
+        if (userRole !== 3) {
+            statusBadge.className = 'modal-status-badge ' + getCategoryStatusBadgeClass(category.status);
+            statusBadge.textContent = getCategoryStatusLabel(category.status);
+            statusBadge.style.display = 'block';
+        } else {
+            statusBadge.style.display = 'none';
+        }
 
         document.getElementById('modalCategoryCreatedAt').textContent = formatDate(category.created_at);
         document.getElementById('modalCategoryUpdatedAt').textContent = formatDate(category.updated_at);
@@ -143,13 +148,11 @@ window.openCategoryModal = async function(categoryId) {
                 actionsHtml += `
                     <button class="btn btn-primary" onclick="openEditCategoryModal(${category.id})"><i class='bx bxs-edit'></i> Modifier</button>
                     <button class="btn btn-success" onclick="restoreCategory(${category.id})"><i class='bx bxs-trash-alt'></i> Restaurer</button>
-                `;
-            } else if (categoryStatus === 0) {
-                actionsHtml += `
-                    <button class="btn btn-primary" onclick="openEditCategoryModal(${category.id})"><i class='bx bxs-edit'></i> Modifier</button>
-                    <button class="btn btn-success" onclick="restoreCategory(${category.id})"><i class='bx bxs-trash-alt'></i> Restaurer</button>
+                    <button class="btn btn-danger" onclick="openConfirmEraseCategoryModal(${category.id})"><i class='bx bxs-trash-alt'></i> Supprimer définitivement</button>
                 `;
             }
+        } else if (userRole === 3) {
+            // Reader: no actions
         }
 
         actionsDiv.innerHTML = actionsHtml;
@@ -294,6 +297,13 @@ window.confirmEraseCategory = async function() {
 
 window.loadTabs = async function() {
     const statusTabs = document.getElementById('statusTabs');
+    
+    if (userRole === 3) {
+        statusTabs.style.display = 'none';
+        return;
+    }
+    
+    statusTabs.style.display = 'flex';
 
     try {
         const counts = await apiRequest('/categories/counts');
@@ -320,7 +330,17 @@ window.loadTabs = async function() {
                     Bloqué(${counts.blocked || 0})
                 </button>
             `;
+        }
 
+        if (userRole === 2) {
+            tabsHtml += `
+                <button class="status-tab ${currentStatus === 2 ? 'active' : ''}" onclick="changeCategoryStatus(2)">
+                    Corbeille(${counts.blocked || 0})
+                </button>
+            `;
+        }
+
+        if (userRole === 1) {
             tabsHtml += `
                 <button class="status-tab ${currentStatus === 0 ? 'active' : ''}" onclick="changeCategoryStatus(0)">
                     Corbeille(${counts.deleted || 0})
@@ -351,8 +371,10 @@ window.getCategoryStatusBadgeClass = function(status) {
 window.getCategoryStatusLabel = function(status) {
     const s = parseInt(status);
     if (s === 1) return 'Actif';
-    if (s === 2) return 'Bloqué';
-    if (s === 0) return 'Supprimé';
+    if (s === 0) return 'Supprimée';
+    if (s === 2) {
+        return userRole == 2 ? 'Supprimée' : 'Bloqué';
+    }
     return 'Inconnu';
 }
 
