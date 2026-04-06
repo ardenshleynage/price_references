@@ -1,6 +1,7 @@
 // Get configuration from body data attributes
 const body = document.body;
-const API_URL = body.dataset.apiUrl || '/api';
+// const API_URL = body.dataset.apiUrl || '/api';
+const API_URL = window.location.origin + '/api';
 const MOBILE_LOGIN_URL = body.dataset.loginUrl || '/mobile/login';
 const MOBILE_DASHBOARD_URL = body.dataset.dashboardUrl || '/mobile/dashboard';
 
@@ -50,12 +51,12 @@ function showToast(message) {
     if (existingToast) {
         existingToast.remove();
     }
-    
+
     const toast = document.createElement('div');
     toast.className = 'toast';
     toast.textContent = message;
     document.body.appendChild(toast);
-    
+
     setTimeout(() => {
         toast.style.opacity = '0';
         setTimeout(() => toast.remove(), 300);
@@ -75,27 +76,27 @@ function logout() {
 function toggleTheme() {
     const profileToggle = document.getElementById('themeToggle');
     const isDark = profileToggle ? profileToggle.checked : document.documentElement.classList.toggle('dark');
-    
+
     if (profileToggle) {
         profileToggle.checked = isDark;
     }
-    
+
     if (isDark) {
         document.documentElement.classList.add('dark');
     } else {
         document.documentElement.classList.remove('dark');
     }
-    
+
     const themeValue = isDark ? 'dark' : 'light';
     localStorage.setItem('mobile_theme', themeValue);
     updateThemeIcon();
     updateProfileThemeToggle();
-    
+
     apiRequest('/user/update/theme', {
         method: 'PUT',
         body: JSON.stringify({ theme: themeValue })
     }).catch(err => console.error('Failed to save theme:', err));
-    
+
     window.dispatchEvent(new CustomEvent('themeChanged', { detail: { isDark } }));
 }
 
@@ -129,12 +130,12 @@ function initTheme() {
     if (savedTheme === 'dark') {
         document.documentElement.classList.add('dark');
     }
-    
+
     const profileToggle = document.getElementById('themeToggle');
     if (profileToggle) {
         profileToggle.checked = savedTheme === 'dark';
     }
-    
+
     updateThemeIcon();
     updateProfileThemeToggle();
 }
@@ -149,7 +150,7 @@ async function apiRequest(endpoint, options = {}) {
             'X-Token': user.token || ''
         }
     };
-    
+
     const response = await fetch(API_URL + endpoint, {
         ...defaultOptions,
         ...options,
@@ -165,8 +166,8 @@ async function apiRequest(endpoint, options = {}) {
         }
         const errorData = await response.json().catch(() => ({}));
         console.log('API Error:', response.status, errorData);
-        const errorMessage = typeof errorData.error === 'string' 
-            ? errorData.error 
+        const errorMessage = typeof errorData.error === 'string'
+            ? errorData.error
             : (errorData.message || 'Request failed');
         const error = new Error(errorMessage);
         error.response = response;
@@ -260,12 +261,12 @@ function initLogin() {
 // Dashboard Page Script
 function initDashboard() {
     const user = getUser();
-    
+
     // Check if user is logged in
     if (!user.id || !user.token) {
         const loadingState = document.getElementById('loadingState');
         const notAuthContent = document.getElementById('notAuthContent');
-        
+
         if (loadingState) loadingState.style.display = 'none';
         if (notAuthContent) notAuthContent.style.display = 'block';
         return;
@@ -276,9 +277,9 @@ function initDashboard() {
     const welcomeRole = document.getElementById('welcomeRole');
     const loadingState = document.getElementById('loadingState');
     const authenticatedContent = document.getElementById('authenticatedContent');
-    
+
     if (welcomeUsername) welcomeUsername.textContent = user.username;
-    
+
     // Set role badge
     let roleText = '';
     switch(parseInt(user.role)) {
@@ -302,17 +303,17 @@ async function loadDashboardStats() {
     const branchesCount = document.getElementById('branchesCount');
     const usersCount = document.getElementById('usersCount');
     const usersStatCard = document.getElementById('usersStatCard');
-    
+
     if (!productsCount) return;
 
     try {
         const stats = await apiRequest('/dashboard/stats');
-        
+
         // Update counts
         if (productsCount) productsCount.textContent = stats.products?.total || 0;
         if (categoriesCount) categoriesCount.textContent = stats.categories?.total || 0;
         if (branchesCount) branchesCount.textContent = stats.branches?.total || 0;
-        
+
         // Show users stat card only for Super Admin (role 1)
         if (usersStatCard && usersCount) {
             if (stats.role == 1) {
@@ -331,15 +332,15 @@ async function loadDashboardStats() {
 // Initialize page-specific scripts based on body class or data attribute
 document.addEventListener('DOMContentLoaded', function() {
     initTheme();
-    
+
     // Auto-detect which page we're on and initialize accordingly
     const body = document.body;
-    
+
     // Login page
     if (document.getElementById('loginForm')) {
         initLogin();
     }
-    
+
     // Dashboard page
     if (body.classList.contains('page-dashboard') || document.getElementById('mainContainer')) {
         if (document.getElementById('loadingState')) {
