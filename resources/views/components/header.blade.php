@@ -5,33 +5,32 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="icon" type="image/png" href="{{ asset('images/bx--bxs-smile.png') }}">
-
-    <!-- Boxicons -->
-    <!-- <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'> -->
-    <!-- <link href='https://unpkg.com/boxicons@2.1.4/dist/boxicons.js' rel='stylesheet'> -->
     <meta name="csrf-token" content="{{ csrf_token() }}">
+    
     <script>
         window.userTheme = "{{ session('theme', 'light') }}";
         if (window.userTheme === "dark") {
             document.documentElement.classList.add("dark");
         }
     </script>
+    
+    <style>
+        /* Desktop uniquement - ne pas appliquer sur mobile */
+        @media (min-width: 769px) {
+            html.sidebar-collapsed #sidebar { width: 60px !important; }
+            html.sidebar-collapsed #sidebar .text { display: none !important; }
+            html.sidebar-collapsed #sidebar .brand .text { display: none !important; }
+            html.sidebar-collapsed #content { width: calc(100% - 60px) !important; left: 60px !important; }
+        }
+    </style>
+    
     <script>
-        // Appliquer l'état du sidebar immédiatement depuis localStorage
         (function() {
-            var savedState = localStorage.getItem("sidebarCollapsed");
-            if (savedState === "true") {
+            if (localStorage.getItem("sidebarCollapsed") === "true") {
                 document.documentElement.classList.add("sidebar-collapsed");
             }
         })();
     </script>
-    <style>
-        /* CSS critique pour éviter le flash - load immédiatement */
-        html.sidebar-collapsed #sidebar { width: 60px !important; }
-        html.sidebar-collapsed #sidebar .text { display: none !important; }
-        html.sidebar-collapsed #sidebar .brand .text { display: none !important; }
-        html.sidebar-collapsed #content { width: calc(100% - 60px) !important; left: 60px !important; }
-    </style>
 
     <!-- My CSS -->
     @vite(['resources/css/styles.css', 'resources/scss/tabs.scss', 'resources/css/form.css'])

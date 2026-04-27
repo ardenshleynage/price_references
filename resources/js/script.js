@@ -13,64 +13,87 @@ allSideMenu.forEach((item) => {
     });
 });
 
-// TOGGLE SIDEBAR
-const menuBar = document.querySelector("#content nav .bx.bx-menu");
+// SIDEBAR TOGGLE
+const menuToggle = document.querySelector("#content nav .bx.bx-menu");
 const sidebar = document.getElementById("sidebar");
+const html = document.documentElement;
 
-// Restaurer l'état du sidebar au chargement depuis localStorage
-function restoreSidebarState() {
-    const savedState = localStorage.getItem("sidebarCollapsed");
-    if (savedState === "true") {
-        sidebar.classList.add("hide");
-        document.documentElement.classList.add("sidebar-collapsed");
-    } else {
-        sidebar.classList.remove("hide");
-        document.documentElement.classList.remove("sidebar-collapsed");
+// Créer l'overlay pour mobile
+function getSidebarOverlay() {
+    let overlay = document.getElementById("sidebar-overlay");
+    if (!overlay) {
+        overlay = document.createElement("div");
+        overlay.id = "sidebar-overlay";
+        document.body.appendChild(overlay);
+        overlay.addEventListener("click", function() {
+            toggleSidebar();
+        });
     }
+    return overlay;
 }
 
-// Appeler au chargement de la page
-restoreSidebarState();
-
-// Sidebar toggle
-menuBar.addEventListener("click", function () {
-    sidebar.classList.toggle("hide");
+// Toggle sidebar
+function toggleSidebar() {
+    const isMobile = window.innerWidth <= 768;
     
-    const isCollapsed = sidebar.classList.contains("hide");
-    
-    if (isCollapsed) {
-        document.documentElement.classList.add("sidebar-collapsed");
-    } else {
-        document.documentElement.classList.remove("sidebar-collapsed");
-    }
-    
-    // Sauvegarder dans localStorage
-    localStorage.setItem("sidebarCollapsed", isCollapsed);
-});
-
-// Sayfa yüklendiğinde ve boyut değişimlerinde sidebar durumunu ayarlama
-function adjustSidebar() {
-    const savedState = localStorage.getItem("sidebarCollapsed");
-    // Prioriser la valeur sauvegardée si elle existe
-    if (savedState === "true") {
-        sidebar.classList.add("hide");
-    } else if (savedState === "false") {
-        sidebar.classList.remove("hide");
-    } else {
-        // Comportement par défaut pour les petits écrans
-        if (window.innerWidth <= 576) {
-            sidebar.classList.add("hide");
-            sidebar.classList.remove("show");
+    if (isMobile) {
+        const isActive = sidebar.classList.contains("active");
+        const overlay = getSidebarOverlay();
+        
+        if (isActive) {
+            sidebar.classList.remove("active");
+            overlay.classList.remove("active");
+            document.body.style.overflow = "";
         } else {
+            sidebar.classList.add("active");
+            overlay.classList.add("active");
+            document.body.style.overflow = "hidden";
+        }
+    } else {
+        const isHidden = sidebar.classList.contains("hide");
+        
+        if (isHidden) {
             sidebar.classList.remove("hide");
-            sidebar.classList.add("show");
+            html.classList.remove("sidebar-collapsed");
+            localStorage.setItem("sidebarCollapsed", "false");
+        } else {
+            sidebar.classList.add("hide");
+            html.classList.add("sidebar-collapsed");
+            localStorage.setItem("sidebarCollapsed", "true");
         }
     }
 }
 
-// Sayfa yüklendiğinde ve pencere boyutu değiştiğinde sidebar durumunu ayarlama
-window.addEventListener("load", adjustSidebar);
-window.addEventListener("resize", adjustSidebar);
+// Restaurer l'état du sidebar
+function restoreSidebarState() {
+    const savedState = localStorage.getItem("sidebarCollapsed");
+    const isMobile = window.innerWidth <= 768;
+    const overlay = getSidebarOverlay();
+    
+    if (isMobile) {
+        sidebar.classList.remove("active");
+        sidebar.classList.remove("hide");
+        overlay.classList.remove("active");
+        document.body.style.overflow = "";
+    } else {
+        if (savedState === "true") {
+            sidebar.classList.add("hide");
+            html.classList.add("sidebar-collapsed");
+        } else {
+            sidebar.classList.remove("hide");
+            html.classList.remove("sidebar-collapsed");
+        }
+        overlay.classList.remove("active");
+    }
+}
+
+// Event listener
+if (menuToggle) {
+    menuToggle.addEventListener("click", toggleSidebar);
+}
+
+// Initialisation
+document.addEventListener("DOMContentLoaded", restoreSidebarState);
 
 // Arama butonunu toggle etme
 const searchButton = document.querySelector(
