@@ -108,7 +108,7 @@ class BranchController extends Controller
 
             return back()->with('success', 'Branche bloquée avec succès.');
         } catch (\Exception $e) {
-            return back()->with('error', 'Erreur lors du blocage : '.$e->getMessage());
+            return back()->with('error', 'Erreur lors du blocage : ' . $e->getMessage());
         }
     }
 
@@ -123,7 +123,7 @@ class BranchController extends Controller
 
             return back()->with('success', 'Branche débloquée avec succès.');
         } catch (\Exception $e) {
-            return back()->with('error', 'Erreur lors du déblocage : '.$e->getMessage());
+            return back()->with('error', 'Erreur lors du déblocage : ' . $e->getMessage());
         }
     }
 
@@ -132,13 +132,13 @@ class BranchController extends Controller
         try {
             $request->validate(['branche_id' => 'required|exists:branches,id']);
             $branche = Branches::findOrFail($request->branche_id);
-            $branche->status = 0;  // Bloqué
+            $branche->status = 0;
             $branche->updated_at = now();
             $branche->save();
 
             return back()->with('success', 'Branche supprimée avec succès.');
         } catch (\Exception $e) {
-            return back()->with('error', 'Erreur lors de la suppression : '.$e->getMessage());
+            return back()->with('error', 'Erreur lors de la suppression : ' . $e->getMessage());
         }
     }
 
@@ -153,7 +153,7 @@ class BranchController extends Controller
 
             return back()->with('success', 'Branche restaurée avec succès.');
         } catch (\Exception $e) {
-            return back()->with('error', 'Erreur lors de la  restauration : '.$e->getMessage());
+            return back()->with('error', 'Erreur lors de la  restauration : ' . $e->getMessage());
         }
     }
 
@@ -166,7 +166,7 @@ class BranchController extends Controller
 
             return back()->with('success', 'Branche supprimée définitivement.');
         } catch (\Exception $e) {
-            return back()->with('error', 'Erreur lors de la suppression définitive  : '.$e->getMessage());
+            return back()->with('error', 'Erreur lors de la suppression définitive  : ' . $e->getMessage());
         }
     }
 
@@ -175,7 +175,7 @@ class BranchController extends Controller
         try {
             $request->validate(['branche_id' => 'required|exists:branches,id']);
             $branch = Branches::findOrFail($request->branche_id);
-            $q = $request->q ? '?q='.$request->q : '';
+            $q = $request->q ? '?q=' . $request->q : '';
 
             switch ($action) {
                 case 'block':
@@ -198,7 +198,7 @@ class BranchController extends Controller
                     $branch->forceDelete();
                     $message = 'Branche supprimée définitivement.';
 
-                    return redirect()->to('/super_admin_search'.$q)->with('success', $message);
+                    return redirect()->to('/super_admin_search' . $q)->with('success', $message);
                 default:
                     return back()->with('error', 'Action invalide.');
             }
@@ -206,9 +206,9 @@ class BranchController extends Controller
             $branch->updated_at = now();
             $branch->save();
 
-            return redirect()->to('/super_admin_search'.$q)->with('success', $message);
+            return redirect()->to('/super_admin_search' . $q)->with('success', $message);
         } catch (\Exception $e) {
-            return back()->with('error', 'Erreur : '.$e->getMessage());
+            return back()->with('error', 'Erreur : ' . $e->getMessage());
         }
     }
 
@@ -233,7 +233,7 @@ class BranchController extends Controller
             return redirect()->route('super_admin_branches')
                 ->with('success', 'Brance créé avec succès !');
         } catch (\Exception $e) {
-            return back()->withErrors(['error' => 'Erreur lors de la création : '.$e->getMessage()])
+            return back()->withErrors(['error' => 'Erreur lors de la création : ' . $e->getMessage()])
                 ->withInput();
         }
     }
@@ -245,7 +245,7 @@ class BranchController extends Controller
 
         // Validation - inclure l'ID dans la règle unique pour exclure l'enregistrement actuel
         $request->validate([
-            'branche_name' => 'required|string|max:255|min:2|unique:branches,branche_name,'.$id,
+            'branche_name' => 'required|string|max:255|min:2|unique:branches,branche_name,' . $id,
         ], [
             'branche_name.required' => 'Le nom de la branche est obligatoire.',
             'branche_name.string' => 'Le nom de la branche doit être une chaîne de caractères.',
@@ -266,7 +266,7 @@ class BranchController extends Controller
             return redirect()->route('super_admin_branches')
                 ->with('success', 'Branche modifiée avec succès !');
         } catch (\Exception $e) {
-            return back()->withErrors(['error' => 'Erreur lors de la modification : '.$e->getMessage()])
+            return back()->withErrors(['error' => 'Erreur lors de la modification : ' . $e->getMessage()])
                 ->withInput();
         }
     }
@@ -283,7 +283,7 @@ class BranchController extends Controller
             ]);
         } catch (\Exception $e) {
             return redirect()->to('/super_admin_search')
-                ->with('error', 'Branche non trouvée.'.$e->getMessage());
+                ->with('error', 'Branche non trouvée.' . $e->getMessage());
         }
     }
 
@@ -293,7 +293,7 @@ class BranchController extends Controller
         $q = $request->input('q', '');
 
         $request->validate([
-            'branche_name' => 'required|string|max:255|min:2|unique:branches,branche_name,'.$id,
+            'branche_name' => 'required|string|max:255|min:2|unique:branches,branche_name,' . $id,
         ], [
             'branche_name.required' => 'Le nom de la branche est obligatoire.',
             'branche_name.string' => 'Le nom de la branche doit être une chaîne de caractères.',
@@ -307,14 +307,14 @@ class BranchController extends Controller
             $branche->update(['branche_name' => $request->branche_name]);
 
             if (! empty($q)) {
-                return redirect()->to('/super_admin_search?q='.$q)
+                return redirect()->to('/super_admin_search?q=' . $q)
                     ->with('success', 'Branche modifiée avec succès !');
             }
 
             return redirect()->to('/super_admin_search')
                 ->with('success', 'Branche modifiée avec succès !');
         } catch (\Exception $e) {
-            return back()->with('error', 'Erreur lors de la modification : '.$e->getMessage())
+            return back()->with('error', 'Erreur lors de la modification : ' . $e->getMessage())
                 ->withInput();
         }
     }
@@ -396,7 +396,7 @@ class BranchController extends Controller
 
             return back()->with('success', 'Branche supprimée avec succès.');
         } catch (\Exception $e) {
-            return back()->with('error', 'Erreur lors de la suppression : '.$e->getMessage());
+            return back()->with('error', 'Erreur lors de la suppression : ' . $e->getMessage());
         }
     }
 
@@ -411,7 +411,7 @@ class BranchController extends Controller
 
             return back()->with('success', 'Branche restaurée avec succès.');
         } catch (\Exception $e) {
-            return back()->with('error', 'Erreur lors de la  restauration : '.$e->getMessage());
+            return back()->with('error', 'Erreur lors de la  restauration : ' . $e->getMessage());
         }
     }
 
@@ -426,7 +426,7 @@ class BranchController extends Controller
 
             return back()->with('success', 'Branche supprimée définitivement avec succès.');
         } catch (\Exception $e) {
-            return back()->with('error', 'Erreur lors de la suppression définitive : '.$e->getMessage());
+            return back()->with('error', 'Erreur lors de la suppression définitive : ' . $e->getMessage());
         }
     }
 
@@ -435,7 +435,7 @@ class BranchController extends Controller
         try {
             $request->validate(['branche_id' => 'required|exists:branches,id']);
             $branch = Branches::findOrFail($request->branche_id);
-            $q = $request->q ? '?q='.$request->q : '';
+            $q = $request->q ? '?q=' . $request->q : '';
 
             switch ($action) {
                 case 'delete':
@@ -450,7 +450,7 @@ class BranchController extends Controller
                     $branch->status = 0;
                     $message = 'Branche supprimée définitivement.';
 
-                    return redirect()->to('/admins_search'.$q)->with('success', $message);
+                    return redirect()->to('/admins_search' . $q)->with('success', $message);
                 default:
                     return back()->with('error', 'Action invalide.');
             }
@@ -458,9 +458,9 @@ class BranchController extends Controller
             $branch->updated_at = now();
             $branch->save();
 
-            return redirect()->to('/admins_search'.$q)->with('success', $message);
+            return redirect()->to('/admins_search' . $q)->with('success', $message);
         } catch (\Exception $e) {
-            return back()->with('error', 'Erreur : '.$e->getMessage());
+            return back()->with('error', 'Erreur : ' . $e->getMessage());
         }
     }
 
@@ -485,7 +485,7 @@ class BranchController extends Controller
             return redirect()->route('admins_branches')
                 ->with('success', 'Brance créé avec succès !');
         } catch (\Exception $e) {
-            return back()->withErrors(['error' => 'Erreur lors de la création : '.$e->getMessage()])
+            return back()->withErrors(['error' => 'Erreur lors de la création : ' . $e->getMessage()])
                 ->withInput();
         }
     }
@@ -497,7 +497,7 @@ class BranchController extends Controller
 
         // Validation - inclure l'ID dans la règle unique pour exclure l'enregistrement actuel
         $request->validate([
-            'branche_name' => 'required|string|max:255|min:2|unique:branches,branche_name,'.$id,
+            'branche_name' => 'required|string|max:255|min:2|unique:branches,branche_name,' . $id,
         ], [
             'branche_name.required' => 'Le nom de la branche est obligatoire.',
             'branche_name.string' => 'Le nom de la branche doit être une chaîne de caractères.',
@@ -518,7 +518,7 @@ class BranchController extends Controller
             return redirect()->route('admins_branches')
                 ->with('success', 'Branche modifiée avec succès !');
         } catch (\Exception $e) {
-            return back()->withErrors(['error' => 'Erreur lors de la modification : '.$e->getMessage()])
+            return back()->withErrors(['error' => 'Erreur lors de la modification : ' . $e->getMessage()])
                 ->withInput();
         }
     }
@@ -535,7 +535,7 @@ class BranchController extends Controller
             ]);
         } catch (\Exception $e) {
             return redirect()->to('/super_admin_search')
-                ->with('error', 'Branche non trouvée.'.$e->getMessage());
+                ->with('error', 'Branche non trouvée.' . $e->getMessage());
         }
     }
 
@@ -545,7 +545,7 @@ class BranchController extends Controller
         $q = $request->input('q', '');
 
         $request->validate([
-            'branche_name' => 'required|string|max:255|min:2|unique:branches,branche_name,'.$id,
+            'branche_name' => 'required|string|max:255|min:2|unique:branches,branche_name,' . $id,
         ], [
             'branche_name.required' => 'Le nom de la branche est obligatoire.',
             'branche_name.string' => 'Le nom de la branche doit être une chaîne de caractères.',
@@ -559,14 +559,14 @@ class BranchController extends Controller
             $branche->update(['branche_name' => $request->branche_name]);
 
             if (! empty($q)) {
-                return redirect()->to('/admins_search?q='.$q)
+                return redirect()->to('/admins_search?q=' . $q)
                     ->with('success', 'Branche modifiée avec succès !');
             }
 
             return redirect()->to('/admins_search')
                 ->with('success', 'Branche modifiée avec succès !');
         } catch (\Exception $e) {
-            return back()->with('error', 'Erreur lors de la modification : '.$e->getMessage())
+            return back()->with('error', 'Erreur lors de la modification : ' . $e->getMessage())
                 ->withInput();
         }
     }

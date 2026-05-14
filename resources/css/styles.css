@@ -1218,7 +1218,7 @@ html.dark #content main .table-data .todo .todo-list li:hover {
         overflow-x: auto;
         gap: 4px;
     }
-    
+
     .tabs .tab {
         padding: 10px 14px;
         font-size: 13px;
@@ -1350,6 +1350,11 @@ html.dark #content main .table-data .todo .todo-list li:hover {
 .delete-btn {
     background: #241d1d;
     color: #ff0000;
+}
+
+.fake-delete-btn {
+    background: #ff0000;
+    color: #241d1d;
 }
 
 /* Profile Page Styles */

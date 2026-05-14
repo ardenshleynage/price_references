@@ -60,8 +60,14 @@ document.addEventListener("DOMContentLoaded", function () {
                 <form action="${routes.delete}" method="POST">
                     <input type="hidden" name="_token" value="${csrf}">
                     <input type="hidden" name="user_id" value="${id}">
-                    <p><button type="submit" class="action-btn delete-btn">Supprimer</button></p>
+                    <p><button type="submit" class="action-btn fake-delete-btn">Supprimer</button></p>
                 </form>
+<form id="eraseForm" action="${routes.erase}" method="POST">
+            <input type="hidden" name="_token" value="${getCsrfToken()}">
+            <input type="hidden" name="user_id" value="${id}">
+            <p><button type="button" onclick="openConfirmEraseModal(this.form)" class="action-btn delete-permanent-btn">Supprimer définitivement</button></p>
+        </form>
+
             `;
         } else if (status === 2) {
             actionsHtml = `
@@ -76,8 +82,14 @@ document.addEventListener("DOMContentLoaded", function () {
                 <form action="${routes.delete}" method="POST">
                     <input type="hidden" name="_token" value="${getCsrfToken()}">
                     <input type="hidden" name="user_id" value="${id}">
-                    <p><button type="submit" class="action-btn delete-btn">Supprimer</button></p>
+                    <p><button type="submit" class="action-btn fake-delete-btn">Supprimer</button></p>
                 </form>
+<form id="eraseForm" action="${routes.erase}" method="POST">
+            <input type="hidden" name="_token" value="${getCsrfToken()}">
+            <input type="hidden" name="user_id" value="${id}">
+            <p><button type="button" onclick="openConfirmEraseModal(this.form)" class="action-btn delete-permanent-btn">Supprimer définitivement</button></p>
+        </form>
+
             `;
         } else if (status === 0) {
             actionsHtml = `

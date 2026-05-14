@@ -224,7 +224,16 @@ window.openUserModal = function (
             id +
             '"><input type="hidden" name="q" value="' +
             searchQuery +
-            '"><p><button type="submit" class="action-btn delete-btn">Supprimer</button></p></form>';
+            '"><p><button type="submit" class="action-btn delete-btn">Supprimer</button></p></form>' +
+            '<form action="' +
+            routes.erase +
+            '" method="POST"><input type="hidden" name="_token" value="' +
+            csrfToken +
+            '"><input type="hidden" name="user_id" value="' +
+            id +
+            '"><input type="hidden" name="q" value="' +
+            searchQuery +
+            '"><p><button type="button" onclick="openSearchConfirmEraseModal(this.form)" class="action-btn delete-permanent-btn">Supprimer définitivement</button></p></form>';
     } else if (status === 2) {
         actionsHtml +=
             '<form action="' +
@@ -244,7 +253,16 @@ window.openUserModal = function (
             id +
             '"><input type="hidden" name="q" value="' +
             searchQuery +
-            '"><p><button type="submit" class="action-btn delete-btn">Supprimer</button></p></form>';
+            '"><p><button type="submit" class="action-btn delete-btn">Supprimer</button></p></form>' +
+            '<form action="' +
+            routes.erase +
+            '" method="POST"><input type="hidden" name="_token" value="' +
+            csrfToken +
+            '"><input type="hidden" name="user_id" value="' +
+            id +
+            '"><input type="hidden" name="q" value="' +
+            searchQuery +
+            '"><p><button type="button" onclick="openSearchConfirmEraseModal(this.form)" class="action-btn delete-permanent-btn">Supprimer définitivement</button></p></form>';
     } else if (status === 0) {
         actionsHtml =
             '<p><button type="button" class="action-btn edit-btn" onclick="alert(\'Impossible de modifier un élément supprimé. Restaurez-le d\'abord.\')">Modifier</button></p>';
