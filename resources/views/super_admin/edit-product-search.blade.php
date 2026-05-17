@@ -38,7 +38,7 @@
             </p>
 
             <p>
-                <label for="detailed_price">Prix détaillé (ex: 10 unités = 90 HTG)</label>
+                <label for="detailed_price">Prix détaillé (ex: 10 unités = 90 $HT)</label>
                 <input type="text" name="detailed_price" value="{{ $product->detailed_price }}">
             </p>
             <label for="post_scriptum">Informations complémentaires (optionnel)</label>

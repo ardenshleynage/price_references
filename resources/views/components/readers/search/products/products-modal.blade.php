@@ -6,7 +6,7 @@
         <div class="login-container">
             <p><strong>Nom du produit :</strong> <span id="searchModalProductName"></span></p>
             <p><strong>Informations complémentaires :</strong> <span id="searchModalPostScriptum"></span></p>
-            <p><strong>Prix unitaire (HTG) :</strong> <span id="searchModalSinglePrice"></span></p>
+            <p><strong>Prix unitaire ($HT) :</strong> <span id="searchModalSinglePrice"></span></p>
             <p><strong>Prix détaillé :</strong> <span id="searchModalDetailedPrice"></span></p>
             <p><strong>Branche :</strong> <span id="searchModalBranchName"></span></p>
             <p><strong>Catégorie :</strong> <span id="searchModalCategoryName"></span></p>

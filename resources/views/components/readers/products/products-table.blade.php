@@ -16,7 +16,7 @@
                         <td>
                             <p>{{ $prod->product_name }}</p>
                         </td>
-                        <td>{{ $prod->single_price }} HTG</td>
+                        <td>{{ $prod->single_price }} $HT</td>
                         <td>{{ $prod->post_scriptum ?? 'Aucun' }}</td>
                         <td>{{ $prod->detailed_price ?? 'Aucun' }}</td>
                     </tr>

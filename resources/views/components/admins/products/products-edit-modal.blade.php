@@ -16,14 +16,14 @@
             <p>
                 <label for="single_price">Prix unitaire</label>
                 <input type="number" step="0.01" id="editSinglePrice" name="single_price"
-                    placeholder="Prix unitaire (HTG)" required>
+                    placeholder="Prix unitaire ($HT)" required>
             </p>
             <!-- Bouton pour afficher/masquer le prix détaillé -->
             <!-- Prix détaillé (caché par défaut) -->
 
             <p>
                 <input type="text" id="editDetailedPrice" name="detailed_price"
-                    placeholder="Prix détaillé (ex: 10 unités = 90 HTG)">
+                    placeholder="Prix détaillé (ex: 10 unités = 90 $HT)">
             </p>
             <!-- Post-scriptum -->
             <textarea id="editPostScriptum" name="post_scriptum" placeholder="Informations complémentaires (optionnel)"

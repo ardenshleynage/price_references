@@ -1,6 +1,5 @@
 <div id="productModal" data-block-url="{{ route('admins.products.delete') }}"
-    data-delete-url="{{ route('admins.products.delete') }}"
-    data-restore-url="{{ route('admins.products.restore') }}"
+    data-delete-url="{{ route('admins.products.delete') }}" data-restore-url="{{ route('admins.products.restore') }}"
     data-permanent-delete-url="{{ route('admins.products.erase') }}"
     data-update-url="{{ route('admins.products.update') }}" class="modal-overlay" onclick="closeUserModal(event)">
     <div class="login modal-content" onclick="event.stopPropagation()">
@@ -10,7 +9,7 @@
         <div class="login-container">
             <p><strong>Nom du produit :</strong> <span id="modalProductName"></span></p>
             <p><strong>Informations complémentaires :</strong> <span id="modalPostScriptum"></span></p>
-            <p><strong>Prix unitaire (HTG) :</strong> <span id="modalSinglePrice"></span></p>
+            <p><strong>Prix unitaire ($HT) :</strong> <span id="modalSinglePrice"></span></p>
             <p><strong>Prix détaillé :</strong> <span id="modalDetailedPrice"></span></p>
             <p><strong>Branche :</strong> <span id="modalBranchName"></span></p>
             <p><strong>Catégorie :</strong> <span id="modalCategoryName"></span></p>

@@ -16,7 +16,7 @@
 
             <!-- Prix unitaire -->
             <p>
-                <input type="number" step="0.01" name="single_price" placeholder="Prix unitaire (HTG)" required
+                <input type="number" step="0.01" name="single_price" placeholder="Prix unitaire ($HT)" required
                     value="{{ old('single_price') }}">
             </p>
 
@@ -31,7 +31,7 @@
             <!-- Prix détaillé (caché par défaut) -->
             <div id="detailedPriceContainer" style="display: none;">
                 <p>
-                    <input type="text" name="detailed_price" placeholder="Prix détaillé (ex: 10 unités = 90 HTG)"
+                    <input type="text" name="detailed_price" placeholder="Prix détaillé (ex: 10 unités = 90 $HT)"
                         value="{{ old('detailed_price') }}">
                 </p>
             </div>
