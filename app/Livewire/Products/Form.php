@@ -5,6 +5,7 @@ namespace App\Livewire\Products;
 use App\Models\Branches;
 use App\Models\Categories;
 use App\Models\Products;
+use Illuminate\Contracts\View\View;
 use Livewire\Component;
 
 class Form extends Component
@@ -27,16 +28,20 @@ class Form extends Component
 
     public bool $showDetailedPrice = false;
 
+    public int $userRole;
+    /**
+     * @return array<string,string>
+     */
     protected function rules(): array
     {
         $unique = 'unique:products,product_name';
 
         if ($this->mode === 'edit' && $this->productId) {
-            $unique .= ','.$this->productId;
+            $unique .= ',' . $this->productId;
         }
 
         return [
-            'product_name' => 'required|string|max:255|min:2|'.$unique,
+            'product_name' => 'required|string|max:255|min:2|' . $unique,
             'single_price' => 'required|numeric|min:0',
             'detailed_price' => 'nullable|string|max:255',
             'post_scriptum' => 'nullable|string|max:1000',
@@ -64,8 +69,10 @@ class Form extends Component
         'category_id.exists' => 'La catégorie sélectionnée n\'existe pas.',
     ];
 
-    public function mount(?int $productId = null): void
+    public function mount(?int $productId = null, int $userRole = 3): void
     {
+        $this->userRole = $userRole;
+
         if ($productId) {
             $this->mode = 'edit';
             $this->productId = $productId;
@@ -112,11 +119,22 @@ class Form extends Component
         }
     }
 
-    public function render()
+    public function render(): View
     {
+        if ($this->userRole === 1) {
+            $branches = Branches::orderBy('branche_name')->get();
+            $categories = Categories::orderBy('category_name')->get();
+        } elseif ($this->userRole === 2) {
+            $branches = Branches::whereIn('status', [1, 2, 3])->orderBy('branche_name')->get();
+            $categories = Categories::whereIn('status', [1, 2, 3])->orderBy('category_name')->get();
+        } else {
+            $branches = Branches::where('status', 1)->orderBy('branche_name')->get();
+            $categories = Categories::where('status', 1)->orderBy('category_name')->get();
+        }
+
         return view('livewire.products.form', [
-            'branches' => Branches::where('status', 1)->orderBy('branche_name')->get(),
-            'categories' => Categories::where('status', 1)->orderBy('category_name')->get(),
+            'branches' => $branches,
+            'categories' => $categories,
         ]);
     }
 }

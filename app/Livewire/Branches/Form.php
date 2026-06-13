@@ -3,6 +3,7 @@
 namespace App\Livewire\Branches;
 
 use App\Models\Branches;
+use Illuminate\Contracts\View\View;
 use Livewire\Component;
 
 class Form extends Component
@@ -12,17 +13,19 @@ class Form extends Component
     public ?int $branchId = null;
 
     public string $branche_name = '';
-
+    /**
+     * @return array<string,string>
+     */
     protected function rules(): array
     {
         $unique = 'unique:branches,branche_name';
 
         if ($this->mode === 'edit' && $this->branchId) {
-            $unique .= ','.$this->branchId;
+            $unique .= ',' . $this->branchId;
         }
 
         return [
-            'branche_name' => 'required|string|max:255|min:2|'.$unique,
+            'branche_name' => 'required|string|max:255|min:2|' . $unique,
         ];
     }
 
@@ -64,7 +67,7 @@ class Form extends Component
         }
     }
 
-    public function render()
+    public function render(): View
     {
         return view('livewire.branches.form');
     }

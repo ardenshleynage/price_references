@@ -3,6 +3,7 @@
 namespace App\Livewire\Categories;
 
 use App\Models\Categories;
+use Illuminate\Contracts\View\View;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Attributes\Layout;
 use Livewire\Attributes\On;
@@ -33,6 +34,12 @@ class Index extends Component
 
     public int $userRole;
 
+    public string $sortField = 'updated_at';
+
+    public string $sortDirection = 'desc';
+
+    public int $tableRefreshKey = 0;
+
     public function mount(): void
     {
         $this->userRole = (int) Auth::user()->role;
@@ -42,6 +49,17 @@ class Index extends Component
     {
         $this->statusFilter = $filter;
         $this->resetPage();
+        $this->tableRefreshKey++;
+    }
+
+    public function sortBy(string $field): void
+    {
+        if ($this->sortField === $field) {
+            $this->sortDirection = $this->sortDirection === 'asc' ? 'desc' : 'asc';
+        } else {
+            $this->sortField = $field;
+            $this->sortDirection = 'asc';
+        }
     }
 
     public function viewDetail(int $id): void
@@ -58,7 +76,7 @@ class Index extends Component
 
     public function block(int $id): void
     {
-        if ($this->userRole !== 1) {
+        if ($this->userRole > 2) {
             return;
         }
 
@@ -66,12 +84,13 @@ class Index extends Component
         $category->status = 2;
         $category->save();
         $this->closeDetailModal();
+        $this->tableRefreshKey++;
         session()->flash('success', 'Catégorie bloquée avec succès.');
     }
 
     public function unblock(int $id): void
     {
-        if ($this->userRole !== 1) {
+        if ($this->userRole > 2) {
             return;
         }
 
@@ -79,6 +98,7 @@ class Index extends Component
         $category->status = 1;
         $category->save();
         $this->closeDetailModal();
+        $this->tableRefreshKey++;
         session()->flash('success', 'Catégorie débloquée avec succès.');
     }
 
@@ -89,13 +109,14 @@ class Index extends Component
         if ($this->userRole === 1) {
             $category->status = 0;
         } elseif ($this->userRole === 2) {
-            $category->status = 2;
+            $category->status = 0;
         } else {
             return;
         }
 
         $category->save();
         $this->closeDetailModal();
+        $this->tableRefreshKey++;
         session()->flash('success', 'Catégorie supprimée avec succès.');
     }
 
@@ -109,22 +130,31 @@ class Index extends Component
         $category->status = 1;
         $category->save();
         $this->closeDetailModal();
+        $this->tableRefreshKey++;
         session()->flash('success', 'Catégorie restaurée avec succès.');
     }
 
     public function confirmErase(int $id): void
     {
         $this->eraseCategoryId = $id;
+        $this->showDetailModal = false;
         $this->showConfirmErase = true;
     }
 
     public function erase(): void
     {
         if ($this->eraseCategoryId) {
-            Categories::findOrFail($this->eraseCategoryId)->forceDelete();
+            if ($this->userRole === 1) {
+                Categories::findOrFail($this->eraseCategoryId)->forceDelete();
+            } else {
+                $category = Categories::findOrFail($this->eraseCategoryId);
+                $category->status = 3;
+                $category->save();
+            }
             $this->closeDetailModal();
             $this->showConfirmErase = false;
             $this->eraseCategoryId = null;
+            $this->tableRefreshKey++;
             session()->flash('success', 'Catégorie supprimée définitivement.');
         }
     }
@@ -134,13 +164,16 @@ class Index extends Component
         $this->showConfirmErase = false;
         $this->eraseCategoryId = null;
     }
-
+    /**
+     * @param mixed $message
+     */
     #[On('category-saved')]
     public function closeModals($message = ''): void
     {
         $this->showAddModal = false;
         $this->showEditModal = false;
         $this->selectedCategory = null;
+        $this->tableRefreshKey++;
 
         if ($message) {
             session()->flash('success', $message);
@@ -161,15 +194,52 @@ class Index extends Component
             return;
         }
         $this->selectedCategory = Categories::findOrFail($id);
+        $this->showDetailModal = false;
         $this->showEditModal = true;
     }
 
-    public function render()
+    #[On('open-add-modal')]
+    public function handleOpenAddModal(): void
     {
-        $query = Categories::orderBy('updated_at', 'desc');
+        $this->openAddModal();
+    }
+    /**
+     * @param mixed $filter
+     */
+    #[On('tab-filter-set')]
+    public function handleTabFilterSet($filter): void
+    {
+        $this->setFilter($filter);
+    }
+    #[On('tabs-set-filter')]
+    public function handleTabsSetFilter($filter): void
+    {
+        $this->setFilter($filter);
+    }
+
+    /**
+     * @param mixed $field
+     */
+    #[On('table-sort-by')]
+    public function handleTableSortBy($field): void
+    {
+        $this->sortBy($field);
+    }
+    /**
+     * @param mixed $id
+     */
+    #[On('table-view-detail')]
+    public function handleTableViewDetail($id): void
+    {
+        $this->viewDetail($id);
+    }
+
+    public function render(): View
+    {
+        $query = Categories::orderBy($this->sortField, $this->sortDirection);
 
         if ($this->userRole === 2) {
-            $query->whereIn('status', [1, 2]);
+            $query->whereIn('status', [0, 1, 2]);
         } elseif ($this->userRole === 3) {
             $query->where('status', 1);
         }
@@ -180,6 +250,8 @@ class Index extends Component
             $query->where('status', 2);
         } elseif ($this->statusFilter === 'deleted') {
             $query->where('status', 0);
+        } elseif ($this->statusFilter === 'deleted_by_admin') {
+            $query->where('status', 3);
         }
 
         $categories = $query->paginate(10);

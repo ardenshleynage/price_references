@@ -53,7 +53,7 @@ class Index extends Component
     private function loadAdminStats(): void
     {
         $this->totalProducts = Products::whereIn('status', [1, 2])->count();
-        $this->totalCategories = Categories::whereIn('status', [1, 2])->count();
+        $this->totalCategories = Categories::whereIn('status', [0, 1, 2])->count();
         $this->totalBranches = Branches::whereIn('status', [1, 2])->count();
         $this->totalUsers = 0;
     }

@@ -3,6 +3,7 @@
 namespace App\Livewire\Categories;
 
 use App\Models\Categories;
+use Illuminate\Contracts\View\View;
 use Livewire\Component;
 
 class Form extends Component
@@ -18,11 +19,11 @@ class Form extends Component
         $unique = 'unique:categories,category_name';
 
         if ($this->mode === 'edit' && $this->categoryId) {
-            $unique .= ','.$this->categoryId;
+            $unique .= ',' . $this->categoryId;
         }
 
         return [
-            'category_name' => 'required|string|max:255|min:2|'.$unique,
+            'category_name' => 'required|string|max:255|min:2|' . $unique,
         ];
     }
 
@@ -64,7 +65,7 @@ class Form extends Component
         }
     }
 
-    public function render()
+    public function render(): View
     {
         return view('livewire.categories.form');
     }

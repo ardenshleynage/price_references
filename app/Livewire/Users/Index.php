@@ -3,6 +3,7 @@
 namespace App\Livewire\Users;
 
 use App\Models\User;
+use Illuminate\Contracts\View\View;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Attributes\Layout;
 use Livewire\Attributes\On;
@@ -31,9 +32,19 @@ class Index extends Component
 
     public ?int $eraseUserId = null;
 
+    public int $userRole;
+
+    public string $sortDirection = 'desc';
+
+    public string $sortField = 'updated_at';
+
+    public int $tableRefreshKey = 0;
+
     public function mount(): void
     {
-        if ((int) Auth::user()->role !== 1) {
+        $this->userRole = (int) Auth::user()->role;
+
+        if ($this->userRole !== 1) {
             abort(403);
         }
     }
@@ -42,6 +53,17 @@ class Index extends Component
     {
         $this->statusFilter = $filter;
         $this->resetPage();
+        $this->tableRefreshKey++;
+    }
+
+    public function sortBy(string $field): void
+    {
+        if ($this->sortField === $field) {
+            $this->sortDirection = $this->sortDirection === 'asc' ? 'desc' : 'asc';
+        } else {
+            $this->sortField = $field;
+            $this->sortDirection = 'asc';
+        }
     }
 
     public function viewUser(int $id): void
@@ -69,6 +91,7 @@ class Index extends Component
         }
     }
 
+    #[On('open-add-modal')]
     public function openAddModal(): void
     {
         $this->showAddModal = true;
@@ -119,6 +142,7 @@ class Index extends Component
     public function confirmErase(int $id): void
     {
         $this->eraseUserId = $id;
+        $this->showUserModal = false;
         $this->showConfirmErase = true;
     }
 
@@ -146,13 +170,37 @@ class Index extends Component
         }
     }
 
-    public function render()
+    #[On('table-sort-by')]
+    public function handleTableSortBy($field): void
+    {
+        $this->sortBy($field);
+    }
+
+    #[On('table-view-detail')]
+    public function handleTableViewDetail($id): void
+    {
+        $this->viewUser($id);
+    }
+
+    #[On('erase-user')]
+    public function handleEraseUser(): void
+    {
+        $this->erase();
+    }
+
+    #[On('cancel-erase-user')]
+    public function handleCancelEraseUser(): void
+    {
+        $this->cancelErase();
+    }
+
+    public function render(): View
     {
         $currentUserId = Auth::id();
 
         $query = User::where('role', '!=', 1)
             ->where('id', '!=', $currentUserId)
-            ->orderBy('updated_at', 'desc');
+            ->orderBy($this->sortField, $this->sortDirection);
 
         if ($this->statusFilter === 'active') {
             $query->where('status', 1);
@@ -167,6 +215,7 @@ class Index extends Component
 
         return view('livewire.users.index', [
             'users' => $users,
+            'superAdminExists' => User::where('role', 1)->exists(),
         ]);
     }
 }

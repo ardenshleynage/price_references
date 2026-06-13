@@ -6,8 +6,10 @@ use App\Models\Branches;
 use App\Models\Categories;
 use App\Models\Products;
 use App\Models\User;
+use Illuminate\Contracts\View\View;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Attributes\Layout;
+use Livewire\Attributes\On;
 use Livewire\Attributes\Title;
 use Livewire\Attributes\Url;
 use Livewire\Component;
@@ -38,6 +40,14 @@ class Index extends Component
     public bool $showUserModal = false;
 
     public ?User $selectedUser = null;
+
+    public bool $showEditProductModal = false;
+
+    public bool $showEditCategoryModal = false;
+
+    public bool $showEditBranchModal = false;
+
+    public bool $showEditUserModal = false;
 
     public bool $showConfirmErase = false;
 
@@ -75,7 +85,14 @@ class Index extends Component
 
         $statusFilter = match ($role) {
             1 => null,
-            2 => [1, 2],
+            2 => [0, 1, 2],
+            3 => [1],
+            default => [1],
+        };
+
+        $categoryStatusFilter = match ($role) {
+            1 => null,
+            2 => [0, 1, 2],
             3 => [1],
             default => [1],
         };
@@ -84,7 +101,7 @@ class Index extends Component
 
         if ($role === 1 || $role === 2 || $role === 3) {
             $products = Products::with(['branch', 'category'])
-                ->when($statusFilter, fn ($qry) => $qry->whereIn('status', $statusFilter))
+                ->when($statusFilter, fn($qry) => $qry->whereIn('status', $statusFilter))
                 ->where(function ($qry) use ($like) {
                     $qry->where('product_name', 'like', $like)
                         ->orWhere('post_scriptum', 'like', $like);
@@ -97,7 +114,7 @@ class Index extends Component
             $categories = Categories::where(function ($qry) use ($like) {
                 $qry->where('category_name', 'like', $like);
             })
-                ->when($statusFilter, fn ($qry) => $qry->whereIn('status', $statusFilter))
+                ->when($categoryStatusFilter, fn($qry) => $qry->whereIn('status', $categoryStatusFilter))
                 ->orderBy('category_name')
                 ->get();
 
@@ -106,7 +123,7 @@ class Index extends Component
             $branches = Branches::where(function ($qry) use ($like) {
                 $qry->where('branche_name', 'like', $like);
             })
-                ->when($statusFilter, fn ($qry) => $qry->whereIn('status', $statusFilter))
+                ->when($statusFilter, fn($qry) => $qry->whereIn('status', $statusFilter))
                 ->orderBy('branche_name')
                 ->get();
 
@@ -123,6 +140,18 @@ class Index extends Component
         }
     }
 
+    #[On('search-show-product')]
+    public function handleShowProduct(int $id): void
+    {
+        $this->showProduct($id);
+    }
+
+    #[On('search-close-product-modal')]
+    public function handleCloseProductModal(): void
+    {
+        $this->closeProductModal();
+    }
+
     public function showProduct(int $id): void
     {
         $this->selectedProduct = Products::with(['branch', 'category'])->findOrFail($id);
@@ -133,6 +162,18 @@ class Index extends Component
     {
         $this->showProductModal = false;
         $this->selectedProduct = null;
+    }
+
+    #[On('search-show-branch')]
+    public function handleShowBranch(int $id): void
+    {
+        $this->showBranch($id);
+    }
+
+    #[On('search-close-branch-modal')]
+    public function handleCloseBranchModal(): void
+    {
+        $this->closeBranchModal();
     }
 
     public function showBranch(int $id): void
@@ -147,6 +188,18 @@ class Index extends Component
         $this->selectedBranch = null;
     }
 
+    #[On('search-show-category')]
+    public function handleShowCategory(int $id): void
+    {
+        $this->showCategory($id);
+    }
+
+    #[On('search-close-category-modal')]
+    public function handleCloseCategoryModal(): void
+    {
+        $this->closeCategoryModal();
+    }
+
     public function showCategory(int $id): void
     {
         $this->selectedCategory = Categories::findOrFail($id);
@@ -157,6 +210,18 @@ class Index extends Component
     {
         $this->showCategoryModal = false;
         $this->selectedCategory = null;
+    }
+
+    #[On('search-show-user')]
+    public function handleShowUser(int $id): void
+    {
+        $this->showUser($id);
+    }
+
+    #[On('search-close-user-modal')]
+    public function handleCloseUserModal(): void
+    {
+        $this->closeUserModal();
     }
 
     public function showUser(int $id): void
@@ -171,9 +236,15 @@ class Index extends Component
         $this->selectedUser = null;
     }
 
+    #[On('search-block-product')]
+    public function handleBlockProduct(int $id): void
+    {
+        $this->blockProduct($id);
+    }
+
     public function blockProduct(int $id): void
     {
-        if ($this->userRole !== 1) {
+        if ($this->userRole > 2) {
             return;
         }
         $product = Products::findOrFail($id);
@@ -184,9 +255,15 @@ class Index extends Component
         session()->flash('success', 'Produit bloqué avec succès.');
     }
 
+    #[On('search-unblock-product')]
+    public function handleUnblockProduct(int $id): void
+    {
+        $this->unblockProduct($id);
+    }
+
     public function unblockProduct(int $id): void
     {
-        if ($this->userRole !== 1) {
+        if ($this->userRole > 2) {
             return;
         }
         $product = Products::findOrFail($id);
@@ -197,20 +274,29 @@ class Index extends Component
         session()->flash('success', 'Produit débloqué avec succès.');
     }
 
+    #[On('search-delete-product')]
+    public function handleDeleteProduct(int $id): void
+    {
+        $this->deleteProduct($id);
+    }
+
     public function deleteProduct(int $id): void
     {
-        $product = Products::findOrFail($id);
-        if ($this->userRole === 1) {
-            $product->status = 0;
-        } elseif ($this->userRole === 2) {
-            $product->status = 2;
-        } else {
+        if ($this->userRole > 2) {
             return;
         }
+        $product = Products::findOrFail($id);
+        $product->status = 0;
         $product->save();
         $this->closeProductModal();
         $this->search();
         session()->flash('success', 'Produit supprimé avec succès.');
+    }
+
+    #[On('search-restore-product')]
+    public function handleRestoreProduct(int $id): void
+    {
+        $this->restoreProduct($id);
     }
 
     public function restoreProduct(int $id): void
@@ -226,15 +312,27 @@ class Index extends Component
         session()->flash('success', 'Produit restauré avec succès.');
     }
 
+    #[On('search-confirm-erase-product')]
+    public function handleConfirmEraseProduct(int $id): void
+    {
+        $this->confirmEraseProduct($id);
+    }
+
     public function confirmEraseProduct(int $id): void
     {
         $this->eraseProductId = $id;
         $this->showConfirmErase = true;
     }
 
+    #[On('search-block-category')]
+    public function handleBlockCategory(int $id): void
+    {
+        $this->blockCategory($id);
+    }
+
     public function blockCategory(int $id): void
     {
-        if ($this->userRole !== 1) {
+        if ($this->userRole > 2) {
             return;
         }
         $category = Categories::findOrFail($id);
@@ -245,9 +343,15 @@ class Index extends Component
         session()->flash('success', 'Catégorie bloquée avec succès.');
     }
 
+    #[On('search-unblock-category')]
+    public function handleUnblockCategory(int $id): void
+    {
+        $this->unblockCategory($id);
+    }
+
     public function unblockCategory(int $id): void
     {
-        if ($this->userRole !== 1) {
+        if ($this->userRole > 2) {
             return;
         }
         $category = Categories::findOrFail($id);
@@ -258,20 +362,29 @@ class Index extends Component
         session()->flash('success', 'Catégorie débloquée avec succès.');
     }
 
+    #[On('search-delete-category')]
+    public function handleDeleteCategory(int $id): void
+    {
+        $this->deleteCategory($id);
+    }
+
     public function deleteCategory(int $id): void
     {
-        $category = Categories::findOrFail($id);
-        if ($this->userRole === 1) {
-            $category->status = 0;
-        } elseif ($this->userRole === 2) {
-            $category->status = 2;
-        } else {
+        if ($this->userRole > 2) {
             return;
         }
+        $category = Categories::findOrFail($id);
+        $category->status = 0;
         $category->save();
         $this->closeCategoryModal();
         $this->search();
         session()->flash('success', 'Catégorie supprimée avec succès.');
+    }
+
+    #[On('search-restore-category')]
+    public function handleRestoreCategory(int $id): void
+    {
+        $this->restoreCategory($id);
     }
 
     public function restoreCategory(int $id): void
@@ -287,15 +400,27 @@ class Index extends Component
         session()->flash('success', 'Catégorie restaurée avec succès.');
     }
 
+    #[On('search-confirm-erase-category')]
+    public function handleConfirmEraseCategory(int $id): void
+    {
+        $this->confirmEraseCategory($id);
+    }
+
     public function confirmEraseCategory(int $id): void
     {
         $this->eraseCategoryId = $id;
         $this->showConfirmErase = true;
     }
 
+    #[On('search-block-branch')]
+    public function handleBlockBranch(int $id): void
+    {
+        $this->blockBranch($id);
+    }
+
     public function blockBranch(int $id): void
     {
-        if ($this->userRole !== 1) {
+        if ($this->userRole > 2) {
             return;
         }
         $branch = Branches::findOrFail($id);
@@ -306,9 +431,15 @@ class Index extends Component
         session()->flash('success', 'Branche bloquée avec succès.');
     }
 
+    #[On('search-unblock-branch')]
+    public function handleUnblockBranch(int $id): void
+    {
+        $this->unblockBranch($id);
+    }
+
     public function unblockBranch(int $id): void
     {
-        if ($this->userRole !== 1) {
+        if ($this->userRole > 2) {
             return;
         }
         $branch = Branches::findOrFail($id);
@@ -319,20 +450,29 @@ class Index extends Component
         session()->flash('success', 'Branche débloquée avec succès.');
     }
 
+    #[On('search-delete-branch')]
+    public function handleDeleteBranch(int $id): void
+    {
+        $this->deleteBranch($id);
+    }
+
     public function deleteBranch(int $id): void
     {
-        $branch = Branches::findOrFail($id);
-        if ($this->userRole === 1) {
-            $branch->status = 0;
-        } elseif ($this->userRole === 2) {
-            $branch->status = 2;
-        } else {
+        if ($this->userRole > 2) {
             return;
         }
+        $branch = Branches::findOrFail($id);
+        $branch->status = 0;
         $branch->save();
         $this->closeBranchModal();
         $this->search();
         session()->flash('success', 'Branche supprimée avec succès.');
+    }
+
+    #[On('search-restore-branch')]
+    public function handleRestoreBranch(int $id): void
+    {
+        $this->restoreBranch($id);
     }
 
     public function restoreBranch(int $id): void
@@ -348,10 +488,22 @@ class Index extends Component
         session()->flash('success', 'Branche restaurée avec succès.');
     }
 
+    #[On('search-confirm-erase-branch')]
+    public function handleConfirmEraseBranch(int $id): void
+    {
+        $this->confirmEraseBranch($id);
+    }
+
     public function confirmEraseBranch(int $id): void
     {
         $this->eraseBranchId = $id;
         $this->showConfirmErase = true;
+    }
+
+    #[On('search-block-user')]
+    public function handleBlockUser(int $id): void
+    {
+        $this->blockUser($id);
     }
 
     public function blockUser(int $id): void
@@ -367,6 +519,12 @@ class Index extends Component
         session()->flash('success', 'Utilisateur bloqué avec succès.');
     }
 
+    #[On('search-unblock-user')]
+    public function handleUnblockUser(int $id): void
+    {
+        $this->unblockUser($id);
+    }
+
     public function unblockUser(int $id): void
     {
         if ($this->userRole !== 1) {
@@ -378,6 +536,12 @@ class Index extends Component
         $this->closeUserModal();
         $this->search();
         session()->flash('success', 'Utilisateur débloqué avec succès.');
+    }
+
+    #[On('search-delete-user')]
+    public function handleDeleteUser(int $id): void
+    {
+        $this->deleteUser($id);
     }
 
     public function deleteUser(int $id): void
@@ -393,6 +557,12 @@ class Index extends Component
         session()->flash('success', 'Utilisateur supprimé avec succès.');
     }
 
+    #[On('search-restore-user')]
+    public function handleRestoreUser(int $id): void
+    {
+        $this->restoreUser($id);
+    }
+
     public function restoreUser(int $id): void
     {
         if ($this->userRole !== 1) {
@@ -406,10 +576,160 @@ class Index extends Component
         session()->flash('success', 'Utilisateur restauré avec succès.');
     }
 
+    #[On('search-confirm-erase-user')]
+    public function handleConfirmEraseUser(int $id): void
+    {
+        $this->confirmEraseUser($id);
+    }
+
     public function confirmEraseUser(int $id): void
     {
         $this->eraseUserId = $id;
         $this->showConfirmErase = true;
+    }
+
+    #[On('search-open-edit-product-modal')]
+    public function handleOpenEditProductModal(int $id): void
+    {
+        $this->openEditProductModal($id);
+    }
+
+    #[On('search-close-edit-product-modal')]
+    public function handleCloseEditProductModal(): void
+    {
+        $this->showEditProductModal = false;
+        $this->selectedProduct = null;
+        $this->search();
+    }
+
+    public function openEditProductModal(int $id): void
+    {
+        $this->selectedProduct = Products::with(['branch', 'category'])->findOrFail($id);
+        $this->showEditProductModal = true;
+    }
+    /**
+     * @param mixed $message
+     */
+    #[On('product-saved')]
+    public function closeEditProductModal($message = ''): void
+    {
+        $this->showEditProductModal = false;
+        $this->selectedProduct = null;
+        $this->search();
+        if ($message) {
+            session()->flash('success', $message);
+        }
+    }
+
+    #[On('search-open-edit-category-modal')]
+    public function handleOpenEditCategoryModal(int $id): void
+    {
+        $this->openEditCategoryModal($id);
+    }
+
+    #[On('search-close-edit-category-modal')]
+    public function handleCloseEditCategoryModal(): void
+    {
+        $this->showEditCategoryModal = false;
+        $this->selectedCategory = null;
+        $this->search();
+    }
+
+    public function openEditCategoryModal(int $id): void
+    {
+        $this->selectedCategory = Categories::findOrFail($id);
+        $this->showEditCategoryModal = true;
+    }
+    /**
+     * @param mixed $message
+     */
+    #[On('category-saved')]
+    public function closeEditCategoryModal($message = ''): void
+    {
+        $this->showEditCategoryModal = false;
+        $this->selectedCategory = null;
+        $this->search();
+        if ($message) {
+            session()->flash('success', $message);
+        }
+    }
+
+    #[On('search-open-edit-branch-modal')]
+    public function handleOpenEditBranchModal(int $id): void
+    {
+        $this->openEditBranchModal($id);
+    }
+
+    #[On('search-close-edit-branch-modal')]
+    public function handleCloseEditBranchModal(): void
+    {
+        $this->showEditBranchModal = false;
+        $this->selectedBranch = null;
+        $this->search();
+    }
+
+    public function openEditBranchModal(int $id): void
+    {
+        $this->selectedBranch = Branches::findOrFail($id);
+        $this->showEditBranchModal = true;
+    }
+    /**
+     * @param mixed $message
+     */
+    #[On('branch-saved')]
+    public function closeEditBranchModal($message = ''): void
+    {
+        $this->showEditBranchModal = false;
+        $this->selectedBranch = null;
+        $this->search();
+        if ($message) {
+            session()->flash('success', $message);
+        }
+    }
+
+    #[On('search-cancel-erase')]
+    public function handleCancelErase(): void
+    {
+        $this->cancelErase();
+    }
+
+    #[On('search-erase')]
+    public function handleErase(): void
+    {
+        $this->erase();
+    }
+
+    #[On('search-open-edit-user-modal')]
+    public function handleOpenEditUserModal(int $id): void
+    {
+        $this->openEditUserModal($id);
+    }
+
+    #[On('search-close-edit-user-modal')]
+    public function handleCloseEditUserModal(): void
+    {
+        $this->showEditUserModal = false;
+        $this->selectedUser = null;
+        $this->search();
+    }
+
+    public function openEditUserModal(int $id): void
+    {
+        $this->selectedUser = User::findOrFail($id);
+        $this->showEditUserModal = true;
+    }
+    /**
+     * @param mixed $message
+     */
+    #[On('user-saved')]
+    public function closeEditUserModal($message = ''): void
+    {
+        $this->showEditUserModal = false;
+        $this->selectedUser = null;
+        $this->search();
+        if ($message) {
+            session()->flash('success', $message);
+        }
     }
 
     public function erase(): void
@@ -419,7 +739,7 @@ class Index extends Component
             if ($this->userRole === 1) {
                 $product->forceDelete();
             } else {
-                $product->status = 0;
+                $product->status = 3;
                 $product->save();
             }
             $this->eraseProductId = null;
@@ -431,7 +751,7 @@ class Index extends Component
             if ($this->userRole === 1) {
                 $category->forceDelete();
             } else {
-                $category->status = 0;
+                $category->status = 3;
                 $category->save();
             }
             $this->eraseCategoryId = null;
@@ -443,7 +763,7 @@ class Index extends Component
             if ($this->userRole === 1) {
                 $branch->forceDelete();
             } else {
-                $branch->status = 0;
+                $branch->status = 3;
                 $branch->save();
             }
             $this->eraseBranchId = null;
@@ -455,7 +775,7 @@ class Index extends Component
             if ($this->userRole === 1) {
                 $user->forceDelete();
             } else {
-                $user->status = 0;
+                $user->status = 3;
                 $user->save();
             }
             $this->eraseUserId = null;
@@ -475,7 +795,7 @@ class Index extends Component
         $this->eraseUserId = null;
     }
 
-    public function render()
+    public function render(): View
     {
         $productRoute = match ($this->userRole) {
             1 => 'super_admin_products',
@@ -499,7 +819,9 @@ class Index extends Component
         };
 
         return view('livewire.search.index', compact(
-            'productRoute', 'categoryRoute', 'branchRoute'
+            'productRoute',
+            'categoryRoute',
+            'branchRoute'
         ));
     }
 }

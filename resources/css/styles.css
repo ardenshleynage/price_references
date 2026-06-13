@@ -1198,8 +1198,7 @@ html.dark #content main .table-data .todo .todo-list li:hover {
 }
 
 .tabs .tab:hover {
-    color: var(--blue);
-    background: var(--light-blue);
+    color: var(--dark-grey);
 }
 
 .tabs .tab.active {
@@ -1244,8 +1243,7 @@ html.dark #content main .table-data .todo .todo-list li:hover {
 }
 
 .dark .tabs .tab:hover {
-    color: var(--blue);
-    background: rgba(60, 145, 230, 0.2);
+    color: #ccc;
 }
 
 .dark .tabs .tab.active {

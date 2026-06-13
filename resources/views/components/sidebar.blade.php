@@ -40,7 +40,7 @@
 <section id="sidebar">
     <a href="{{ route($homeRoute) }}" class="brand">
         <i class='bx bxs-smile bx-lg'></i>
-        <span class="text">AdminHub</span>
+        <span class="text">PriceRef</span>
     </a>
     <ul class="side-menu top">
         <li class="{{ request()->routeIs('*_home') ? 'active' : '' }}">
