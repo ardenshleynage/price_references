@@ -1,7 +1,8 @@
 <?php
 
-use App\Http\Controllers\UsersController;
 use App\Livewire\Auth\ForgotPassword;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Session;
 use App\Livewire\Auth\Login;
 use App\Livewire\Auth\ResetPassword;
 use App\Livewire\Dashboard\Index;
@@ -56,5 +57,9 @@ Route::middleware('auth')->group(function () {
     Route::get('/admins/search', App\Livewire\Search\Index::class)->name('admins_search');
     Route::get('/readers/search', App\Livewire\Search\Index::class)->name('readers_search');
 
-    Route::post('/logout', [UsersController::class, 'logout'])->name('logout');
+    Route::post('/logout', function () {
+        Auth::logout();
+        session()->flush();
+        return redirect()->route('login');
+    })->name('logout');
 });

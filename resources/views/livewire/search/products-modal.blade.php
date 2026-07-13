@@ -28,6 +28,11 @@
                     @case(0)
                         <span class="status process">Supprimé</span>
                     @break
+
+                    @case(3)
+                        Supprimé par un admin ({{ $selectedProduct->deletedBy->username ?? 'Inconnu' }} /
+                        {{ $selectedProduct->updated_at_formatted }})
+                    @break
                 @endswitch
             </p>
             <hr style="margin: 15px 0; border: none; border-top: 1px solid #ddd;">

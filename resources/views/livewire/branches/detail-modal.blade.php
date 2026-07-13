@@ -24,7 +24,8 @@
                             @break
 
                             @case(3)
-                                Supprimé par l'admin
+                                Supprimé par un admin ({{ $selectedBranch->deletedBy->username ?? 'Inconnu' }} /
+                                {{ $selectedBranch->updated_at_formatted }})
                             @break
                         @endswitch
                     </p>

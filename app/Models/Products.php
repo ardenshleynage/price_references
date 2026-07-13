@@ -28,6 +28,7 @@ class Products extends Model
         'branch_id',
         'category_id',
         'status',
+        'deleted_by',
     ];
 
     protected $casts = [
@@ -38,6 +39,7 @@ class Products extends Model
         'branch_id' => 'integer',
         'category_id' => 'integer',
         'status' => 'integer',
+        'deleted_by' => 'integer',
     ];
 
     /**
@@ -64,6 +66,11 @@ class Products extends Model
     public function getUpdatedAtFormattedAttribute(): string
     {
         return $this->updated_at->format('d/m/Y H:i');
+    }
+
+    public function deletedBy(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'deleted_by');
     }
 
     public function getBranchNameAttribute(): string

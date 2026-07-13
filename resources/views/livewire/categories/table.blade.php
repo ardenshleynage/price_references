@@ -41,7 +41,7 @@
                                         @break
 
                                         @case(3)
-                                            <span class="status process">Supprimé par l'admin</span>
+                                            <span class="status process">Supprimé par un admin </span>
                                         @break
 
                                         @default

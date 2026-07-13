@@ -66,6 +66,7 @@ function toggleSidebar() {
 
 // Restaurer l'état du sidebar
 function restoreSidebarState() {
+    if (!sidebar) return;
     const savedState = localStorage.getItem("sidebarCollapsed");
     const isMobile = window.innerWidth <= 768;
     const overlay = getSidebarOverlay();
@@ -104,7 +105,7 @@ const searchButtonIcon = document.querySelector(
 );
 const searchForm = document.querySelector("#content nav form");
 
-searchButton.addEventListener("click", function (e) {
+if (searchButton) searchButton.addEventListener("click", function (e) {
     // Le comportement toggle est désactivé - la barre de recherche est toujours visible sur mobile
 });
 
@@ -165,6 +166,10 @@ document.addEventListener("DOMContentLoaded", function () {
                 document.documentElement.classList.remove("dark");
             }
             window.userTheme = this.value;
+            const welcomeText = document.getElementById("welcome-text");
+            if (welcomeText) {
+                welcomeText.style.color = isDark ? "#fff" : "#333";
+            }
         });
     }
 });

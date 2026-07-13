@@ -64,7 +64,7 @@ class Index extends Component
 
     public function viewDetail(int $id): void
     {
-        $this->selectedBranch = Branches::findOrFail($id);
+        $this->selectedBranch = Branches::with('deletedBy')->findOrFail($id);
         $this->showDetailModal = true;
     }
 
@@ -148,6 +148,7 @@ class Index extends Component
             } else {
                 $branch = Branches::findOrFail($this->eraseBranchId);
                 $branch->status = 3;
+                $branch->deleted_by = auth()->id();
                 $branch->save();
             }
             $this->closeDetailModal();
@@ -206,7 +207,7 @@ class Index extends Component
         if ($this->userRole > 2) {
             return;
         }
-        $this->selectedBranch = Branches::findOrFail($id);
+        $this->selectedBranch = Branches::with('deletedBy')->findOrFail($id);
         $this->showEditModal = true;
         $this->showDetailModal = false;
     }
@@ -245,7 +246,7 @@ class Index extends Component
 
     public function render(): View
     {
-        $query = Branches::orderBy($this->sortField, $this->sortDirection);
+        $query = Branches::with('deletedBy')->orderBy($this->sortField, $this->sortDirection);
 
         if ($this->userRole === 2) {
             $query->whereIn('status', [0, 1, 2]);

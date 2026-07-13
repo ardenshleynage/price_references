@@ -55,6 +55,10 @@
             const isDark = event.detail.theme === 'dark';
             document.documentElement.classList.toggle('dark', isDark);
             window.userTheme = event.detail.theme;
+            const welcomeText = document.getElementById('welcome-text');
+            if (welcomeText) {
+                welcomeText.style.color = isDark ? '#fff' : '#333';
+            }
         });
     </script>
 </body>

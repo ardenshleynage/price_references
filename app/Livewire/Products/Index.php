@@ -67,7 +67,7 @@ class Index extends Component
 
     public function viewDetail(int $id): void
     {
-        $this->selectedProduct = Products::with(['branch', 'category'])->findOrFail($id);
+        $this->selectedProduct = Products::with(['branch', 'category', 'deletedBy'])->findOrFail($id);
         $this->showDetailModal = true;
     }
 
@@ -153,6 +153,7 @@ class Index extends Component
             } else {
                 $product = Products::findOrFail($this->eraseProductId);
                 $product->status = 3;
+                $product->deleted_by = auth()->id();
                 $product->save();
             }
             $this->closeDetailModal();
@@ -199,7 +200,7 @@ class Index extends Component
         if ($this->userRole > 2) {
             return;
         }
-        $this->selectedProduct = Products::with(['branch', 'category'])->findOrFail($id);
+        $this->selectedProduct = Products::with(['branch', 'category', 'deletedBy'])->findOrFail($id);
         $this->showDetailModal = false;
         $this->showEditModal = true;
     }
@@ -230,7 +231,7 @@ class Index extends Component
 
     public function render(): View
     {
-        $query = Products::with(['branch', 'category'])->orderBy($this->sortField, $this->sortDirection);
+        $query = Products::with(['branch', 'category', 'deletedBy'])->orderBy($this->sortField, $this->sortDirection);
 
         if ($this->userRole === 2) {
             $query->whereIn('status', [0, 1, 2]);

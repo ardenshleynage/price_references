@@ -64,7 +64,7 @@ class Index extends Component
 
     public function viewDetail(int $id): void
     {
-        $this->selectedCategory = Categories::findOrFail($id);
+        $this->selectedCategory = Categories::with('deletedBy')->findOrFail($id);
         $this->showDetailModal = true;
     }
 
@@ -149,6 +149,7 @@ class Index extends Component
             } else {
                 $category = Categories::findOrFail($this->eraseCategoryId);
                 $category->status = 3;
+                $category->deleted_by = auth()->id();
                 $category->save();
             }
             $this->closeDetailModal();
@@ -193,7 +194,7 @@ class Index extends Component
         if ($this->userRole > 2) {
             return;
         }
-        $this->selectedCategory = Categories::findOrFail($id);
+        $this->selectedCategory = Categories::with('deletedBy')->findOrFail($id);
         $this->showDetailModal = false;
         $this->showEditModal = true;
     }
@@ -236,7 +237,7 @@ class Index extends Component
 
     public function render(): View
     {
-        $query = Categories::orderBy($this->sortField, $this->sortDirection);
+        $query = Categories::with('deletedBy')->orderBy($this->sortField, $this->sortDirection);
 
         if ($this->userRole === 2) {
             $query->whereIn('status', [0, 1, 2]);

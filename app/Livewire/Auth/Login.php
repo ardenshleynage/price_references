@@ -44,6 +44,8 @@ class Login extends Component
         Auth::login($user, $this->remember);
         $user->update(['last_time_connect' => now()]);
         session()->regenerate();
+        session()->put('user_id', $user->id);
+        session()->put('role', $user->role);
         session()->put('theme', $user->theme ?? 'light');
 
         // Redirection selon le rôle

@@ -64,6 +64,11 @@
                                                         @case(0)
                                                             <span class="status process">Supprimé</span>
                                                         @break
+
+                                                        @case(3)
+                                                            <span class="status process">Supprimé par un admin
+                                                                ({{ $prod->deletedBy->username ?? 'Inconnu' }})</span>
+                                                        @break
                                                     @endswitch
                                                 </td>
                                             @endif
@@ -116,7 +121,8 @@
                                                         @break
 
                                                         @case(3)
-                                                            <span class="status process">Supprimé par l'admin</span>
+                                                            <span class="status process">Supprimé par l'admin
+                                                                ({{ $cat->deletedBy->username ?? 'Inconnu' }})</span>
                                                         @break
                                                     @endswitch
                                                 </td>
@@ -167,6 +173,11 @@
 
                                                         @case(0)
                                                             <span class="status process">Supprimé</span>
+                                                        @break
+
+                                                        @case(3)
+                                                            <span class="status process">Supprimé par l'admin
+                                                                ({{ $branch->deletedBy->username ?? 'Inconnu' }})</span>
                                                         @break
                                                     @endswitch
                                                 </td>

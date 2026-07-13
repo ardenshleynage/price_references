@@ -100,7 +100,7 @@ class Index extends Component
         $this->results = [];
 
         if ($role === 1 || $role === 2 || $role === 3) {
-            $products = Products::with(['branch', 'category'])
+            $products = Products::with(['branch', 'category', 'deletedBy'])
                 ->when($statusFilter, fn($qry) => $qry->whereIn('status', $statusFilter))
                 ->where(function ($qry) use ($like) {
                     $qry->where('product_name', 'like', $like)
@@ -111,7 +111,7 @@ class Index extends Component
 
             $this->results['products'] = $products;
 
-            $categories = Categories::where(function ($qry) use ($like) {
+            $categories = Categories::with('deletedBy')->where(function ($qry) use ($like) {
                 $qry->where('category_name', 'like', $like);
             })
                 ->when($categoryStatusFilter, fn($qry) => $qry->whereIn('status', $categoryStatusFilter))
@@ -120,7 +120,7 @@ class Index extends Component
 
             $this->results['categories'] = $categories;
 
-            $branches = Branches::where(function ($qry) use ($like) {
+            $branches = Branches::with('deletedBy')->where(function ($qry) use ($like) {
                 $qry->where('branche_name', 'like', $like);
             })
                 ->when($statusFilter, fn($qry) => $qry->whereIn('status', $statusFilter))
@@ -154,7 +154,7 @@ class Index extends Component
 
     public function showProduct(int $id): void
     {
-        $this->selectedProduct = Products::with(['branch', 'category'])->findOrFail($id);
+        $this->selectedProduct = Products::with(['branch', 'category', 'deletedBy'])->findOrFail($id);
         $this->showProductModal = true;
     }
 
@@ -178,7 +178,7 @@ class Index extends Component
 
     public function showBranch(int $id): void
     {
-        $this->selectedBranch = Branches::findOrFail($id);
+        $this->selectedBranch = Branches::with('deletedBy')->findOrFail($id);
         $this->showBranchModal = true;
     }
 
@@ -202,7 +202,7 @@ class Index extends Component
 
     public function showCategory(int $id): void
     {
-        $this->selectedCategory = Categories::findOrFail($id);
+        $this->selectedCategory = Categories::with('deletedBy')->findOrFail($id);
         $this->showCategoryModal = true;
     }
 
@@ -604,7 +604,7 @@ class Index extends Component
 
     public function openEditProductModal(int $id): void
     {
-        $this->selectedProduct = Products::with(['branch', 'category'])->findOrFail($id);
+        $this->selectedProduct = Products::with(['branch', 'category', 'deletedBy'])->findOrFail($id);
         $this->showEditProductModal = true;
     }
     /**
@@ -637,7 +637,7 @@ class Index extends Component
 
     public function openEditCategoryModal(int $id): void
     {
-        $this->selectedCategory = Categories::findOrFail($id);
+        $this->selectedCategory = Categories::with('deletedBy')->findOrFail($id);
         $this->showEditCategoryModal = true;
     }
     /**
@@ -670,7 +670,7 @@ class Index extends Component
 
     public function openEditBranchModal(int $id): void
     {
-        $this->selectedBranch = Branches::findOrFail($id);
+        $this->selectedBranch = Branches::with('deletedBy')->findOrFail($id);
         $this->showEditBranchModal = true;
     }
     /**
@@ -740,6 +740,7 @@ class Index extends Component
                 $product->forceDelete();
             } else {
                 $product->status = 3;
+                $product->deleted_by = auth()->id();
                 $product->save();
             }
             $this->eraseProductId = null;
@@ -752,6 +753,7 @@ class Index extends Component
                 $category->forceDelete();
             } else {
                 $category->status = 3;
+                $category->deleted_by = auth()->id();
                 $category->save();
             }
             $this->eraseCategoryId = null;
@@ -764,6 +766,7 @@ class Index extends Component
                 $branch->forceDelete();
             } else {
                 $branch->status = 3;
+                $branch->deleted_by = auth()->id();
                 $branch->save();
             }
             $this->eraseBranchId = null;
