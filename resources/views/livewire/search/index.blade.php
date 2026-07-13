@@ -33,18 +33,21 @@
                 'single_price' => $p->single_price,
                 'branch_name' => $p->branch_name,
                 'category_name' => $p->category_name,
+                'deleted_by_username' => $p->deletedBy?->username,
                 'status' => $p->status,
             ])->toArray();
 
             $resultsArray['categories'] = ($results['categories'] ?? collect())->map(fn($c) => [
                 'id' => $c->id,
                 'category_name' => $c->category_name,
+                'deleted_by_username' => $c->deletedBy?->username,
                 'status' => $c->status,
             ])->toArray();
 
             $resultsArray['branches'] = ($results['branches'] ?? collect())->map(fn($b) => [
                 'id' => $b->id,
                 'branche_name' => $b->branche_name,
+                'deleted_by_username' => $b->deletedBy?->username,
                 'status' => $b->status,
             ])->toArray();
 
@@ -71,6 +74,8 @@
             'branch_name' => $selectedProduct->branch_name,
             'category_name' => $selectedProduct->category_name,
             'created_at_formatted' => $selectedProduct->created_at_formatted,
+            'updated_at_formatted' => $selectedProduct->updated_at_formatted,
+            'deleted_by_username' => $selectedProduct->deletedBy?->username,
             'status' => $selectedProduct->status,
         ] : null;
     @endphp
@@ -86,6 +91,7 @@
             'category_name' => $selectedCategory->category_name,
             'created_at_formatted' => $selectedCategory->created_at_formatted,
             'updated_at_formatted' => $selectedCategory->updated_at_formatted,
+            'deleted_by_username' => $selectedCategory->deletedBy?->username,
             'status' => $selectedCategory->status,
         ] : null;
     @endphp
@@ -100,6 +106,8 @@
             'id' => $selectedBranch->id,
             'branche_name' => $selectedBranch->branche_name,
             'created_at_formatted' => $selectedBranch->created_at_formatted,
+            'updated_at_formatted' => $selectedBranch->updated_at_formatted,
+            'deleted_by_username' => $selectedBranch->deletedBy?->username,
             'status' => $selectedBranch->status,
         ] : null;
     @endphp

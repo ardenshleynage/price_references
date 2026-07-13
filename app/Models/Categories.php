@@ -22,6 +22,8 @@ class Categories extends Model
 
     protected $fillable = ['category_name', 'status', 'deleted_by'];
 
+    protected $appends = ['deleted_by_username'];
+
     protected $casts = [
         'category_name' => 'string',
         'status' => 'integer',
@@ -41,5 +43,10 @@ class Categories extends Model
     public function deletedBy(): BelongsTo
     {
         return $this->belongsTo(User::class, 'deleted_by');
+    }
+
+    public function getDeletedByUsernameAttribute(): ?string
+    {
+        return $this->deletedBy?->username;
     }
 }

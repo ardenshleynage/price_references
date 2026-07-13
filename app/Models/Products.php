@@ -31,6 +31,8 @@ class Products extends Model
         'deleted_by',
     ];
 
+    protected $appends = ['deleted_by_username'];
+
     protected $casts = [
         'product_name' => 'string',
         'post_scriptum' => 'string',
@@ -71,6 +73,11 @@ class Products extends Model
     public function deletedBy(): BelongsTo
     {
         return $this->belongsTo(User::class, 'deleted_by');
+    }
+
+    public function getDeletedByUsernameAttribute(): ?string
+    {
+        return $this->deletedBy?->username;
     }
 
     public function getBranchNameAttribute(): string

@@ -41,7 +41,8 @@
                                         @break
 
                                         @case(3)
-                                            <span class="status process">Supprimé par un admin
+                                            <span class="status process">Supprimé par l'admin
+                                                ({{ $branche['deleted_by_username'] ?? 'Inconnu' }})
                                             </span>
                                         @break
 

@@ -23,8 +23,8 @@
                         @break
 
                         @case(3)
-                            Supprimé par un admin ({{ $selectedCategory->deletedBy->username ?? 'Inconnu' }} /
-                            {{ $selectedCategory->updated_at_formatted }})
+                            Supprimé par l'admin ({{ $selectedCategory['deleted_by_username'] ?? 'Inconnu' }} /
+                            {{ $selectedCategory['updated_at_formatted'] }})
                         @break
                     @endswitch
                 </p>

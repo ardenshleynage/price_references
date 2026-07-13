@@ -24,7 +24,7 @@
                                 @break
 
                                 @case(3)
-                                    Supprimé par un admin ({{ $selectedCategory->deletedBy->username ?? 'Inconnu' }} /
+                                    Supprimé par l'admin ({{ $selectedCategory->deletedBy->username ?? 'Inconnu' }} /
                                     {{ $selectedCategory->updated_at_formatted }})
                                 @break
                             @endswitch

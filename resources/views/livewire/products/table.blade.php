@@ -43,7 +43,9 @@
                                         @break
 
                                         @case(3)
-                                            <span class="status process">Supprimé par un admin </span>
+                                            <span class="status process">Supprimé par l'admin
+                                                ({{ $prod['deleted_by_username'] ?? 'Inconnu' }})
+                                            </span>
                                         @break
 
                                         @default

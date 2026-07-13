@@ -112,7 +112,7 @@ class Index extends Component
         if ($this->userRole === 1) {
             $product->status = 0;
         } elseif ($this->userRole === 2) {
-            $product->status = 2;
+            $product->status = 0;
         } else {
             return;
         }

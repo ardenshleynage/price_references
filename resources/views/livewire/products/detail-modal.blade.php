@@ -30,7 +30,7 @@
                                  @break
 
                                  @case(3)
-                                     Supprimé par un admin ({{ $selectedProduct->deletedBy->username ?? 'Inconnu' }} /
+                                     Supprimé par l'admin ({{ $selectedProduct->deletedBy->username ?? 'Inconnu' }} /
                                      {{ $selectedProduct->updated_at_formatted }})
                                  @break
                              @endswitch
